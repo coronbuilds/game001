@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>反射神経ゲーム</title>
+<title>反射神経チャレンジ</title>
 <style>
 * {
   box-sizing: border-box;
@@ -17,17 +17,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  user-select: none;
 }
 .container {
   width: 100%;
   max-width: 500px;
-  text-align: center;
   padding: 20px;
+  text-align: center;
 }
 h1 {
-  font-size: 32px;
   margin-bottom: 5px;
+}
+.subtitle {
+  color: #aaa;
+  margin-bottom: 20px;
 }
 #message {
   font-size: 20px;
@@ -35,125 +37,285 @@ h1 {
 }
 #game {
   width: 100%;
-  height: 350px;
+  height: 300px;
   border-radius: 20px;
   background: #333;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
   touch-action: manipulation;
 }
 button {
-  margin-top: 20px;
-  padding: 15px 30px;
-  font-size: 20px;
+  margin-top: 15px;
+  padding: 15px 25px;
+  font-size: 18px;
+  font-weight: bold;
   border: none;
   border-radius: 12px;
 }
 #result {
   margin-top: 20px;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: bold;
 }
-#best {
+#rank {
+  font-size: 32px;
   margin-top: 10px;
-  font-size: 18px;
+}
+.stats {
+  margin-top: 25px;
+  padding: 15px;
+  background: #222;
+  border-radius: 15px;
+  line-height: 1.8;
+}
+.history {
+  margin-top: 20px;
+  padding: 15px;
+  background: #222;
+  border-radius: 15px;
+  text-align: left;
+}
+.history h3 {
+  text-align: center;
+}
+.history-item {
+  padding: 5px 0;
+  border-bottom: 1px solid #444;
+}
+.reset {
+  background: #555;
+  color: white;
+  font-size: 14px;
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>⚡ 反射神経ゲーム</h1>
+<h1>⚡ 反射神経チャレンジ</h1>
+<div class="subtitle">
+どれだけ速く反応できる？
+</div>
 <div id="message">
-「スタート」を押してね
+スタートを押してね
 </div>
 <div id="game">
-待機中
+READY
 </div>
 <button onclick="startGame()">
 スタート
 </button>
 <div id="result"></div>
-<div id="best">
-🏆 最高記録：<span id="bestScore">---</span>
+<div id="rank"></div>
+<div class="stats">
+🏆 最高記録：
+<span id="best">---</span> ms
+<br>
+📊 平均：
+<span id="average">---</span> ms
+<br>
+🔢 プレイ回数：
+<span id="plays">0</span> 回
 </div>
+<div class="history">
+<h3>📈 最近の記録</h3>
+<div id="history">
+まだ記録がありません
+</div>
+</div>
+<button class="reset" onclick="resetData()">
+記録をリセット
+</button>
 </div>
 <script>
-let startTime;
+// ====================
+// データ読み込み
+// ====================
+let records =
+  JSON.parse(localStorage.getItem("reactionRecords")) || [];
+let best =
+  localStorage.getItem("reactionBest");
+// ====================
+// 表示更新
+// ====================
+function updateStats() {
+  document.getElementById("plays").textContent =
+    records.length;
+  if (records.length === 0) {
+    document.getElementById("average").textContent =
+      "---";
+    document.getElementById("best").textContent =
+      "---";
+    return;
+  }
+  const total =
+    records.reduce((sum, value) => sum + value, 0);
+  const average =
+    Math.round(total / records.length);
+  document.getElementById("average").textContent =
+    average;
+  document.getElementById("best").textContent =
+    best;
+  updateHistory();
+}
+// ====================
+// 履歴表示
+// ====================
+function updateHistory() {
+  const history =
+    document.getElementById("history");
+  if (records.length === 0) {
+    history.innerHTML =
+      "まだ記録がありません";
+    return;
+  }
+  const recent =
+    records.slice(-10).reverse();
+  history.innerHTML =
+    recent.map((value, index) => {
+      return `
+        <div class="history-item">
+          ${records.length - index}回目：
+          <strong>${value} ms</strong>
+        </div>
+      `;
+    }).join("");
+}
+// ====================
+// ゲーム
+// ====================
 let timer;
+let startTime;
 let waiting = false;
 let playing = false;
-// スマホ内に保存されている最高記録を取得
-let bestScore = localStorage.getItem("reactionBest");
-document.getElementById("bestScore").textContent =
-  bestScore ? bestScore + " ms" : "---";
 function startGame() {
   if (playing) return;
   playing = true;
   waiting = true;
-  document.getElementById("result").textContent = "";
   document.getElementById("message").textContent =
     "まだ押さないで！";
   document.getElementById("game").textContent =
-    "待って…";
+    "WAIT...";
   document.getElementById("game").style.background =
     "#333";
+  document.getElementById("result").textContent =
+    "";
+  document.getElementById("rank").textContent =
+    "";
   const delay =
     Math.floor(Math.random() * 3000) + 2000;
   timer = setTimeout(() => {
     waiting = false;
-    startTime = performance.now();
+    startTime =
+      performance.now();
     document.getElementById("game").textContent =
       "TAP!";
     document.getElementById("game").style.background =
       "#00aa55";
     document.getElementById("message").textContent =
-      "今だ！";
+      "今だ！！！";
   }, delay);
 }
-document.getElementById("game").addEventListener("click", () => {
-  if (!playing) return;
-  // フライング
-  if (waiting) {
-    clearTimeout(timer);
+// ====================
+// タップ判定
+// ====================
+document.getElementById("game").addEventListener(
+  "click",
+  () => {
+    if (!playing) return;
+    // フライング
+    if (waiting) {
+      clearTimeout(timer);
+      document.getElementById("message").textContent =
+        "フライング！😈";
+      document.getElementById("game").textContent =
+        "FAIL";
+      document.getElementById("game").style.background =
+        "#aa2222";
+      document.getElementById("result").textContent =
+        "早すぎ！";
+      playing = false;
+      waiting = false;
+      return;
+    }
+    // 反応速度
+    const reaction =
+      Math.round(
+        performance.now() - startTime
+      );
+    records.push(reaction);
+    // 最高記録
+    if (!best || reaction < Number(best)) {
+      best = reaction;
+      localStorage.setItem(
+        "reactionBest",
+        best
+      );
+      document.getElementById("result").textContent =
+        reaction + " ms 🎉 NEW RECORD!";
+    } else {
+      document.getElementById("result").textContent =
+        reaction + " ms";
+    }
+    // ランク
+    let rank;
+    if (reaction < 200) {
+      rank = "S 🏆";
+    } else if (reaction < 250) {
+      rank = "A 🔥";
+    } else if (reaction < 350) {
+      rank = "B 👍";
+    } else if (reaction < 500) {
+      rank = "C 🙂";
+    } else {
+      rank = "D 🐢";
+    }
+    document.getElementById("rank").textContent =
+      "RANK " + rank;
+    // 保存
+    localStorage.setItem(
+      "reactionRecords",
+      JSON.stringify(records)
+    );
     document.getElementById("message").textContent =
-      "フライング！😈";
+      "ナイス！";
     document.getElementById("game").textContent =
-      "もう一回！";
+      reaction + " ms";
     document.getElementById("game").style.background =
-      "#aa2222";
-    document.getElementById("result").textContent =
-      "反射神経：失格";
+      "#333";
+    updateStats();
     playing = false;
-    waiting = false;
+  }
+);
+// ====================
+// リセット
+// ====================
+function resetData() {
+  if (!confirm("記録を全部消しますか？")) {
     return;
   }
-  // 反応速度を計算
-  const reaction =
-    Math.round(performance.now() - startTime);
-  document.getElementById("message").textContent =
-    "ナイス！";
-  document.getElementById("game").textContent =
-    reaction + " ms";
-  document.getElementById("game").style.background =
-    "#333";
+  records = [];
+  best = null;
+  localStorage.removeItem(
+    "reactionRecords"
+  );
+  localStorage.removeItem(
+    "reactionBest"
+  );
   document.getElementById("result").textContent =
-    "あなたの反応速度：" + reaction + " ms";
-  // 最高記録更新
-  if (!bestScore || reaction < Number(bestScore)) {
-    bestScore = reaction;
-    localStorage.setItem(
-      "reactionBest",
-      bestScore
-    );
-    document.getElementById("bestScore").textContent =
-      bestScore + " ms";
-    document.getElementById("result").textContent +=
-      " 🎉 新記録！";
-  }
-  playing = false;
-});
+    "";
+  document.getElementById("rank").textContent =
+    "";
+  document.getElementById("message").textContent =
+    "記録をリセットしました";
+  document.getElementById("game").textContent =
+    "READY";
+  updateStats();
+}
+// 初期表示
+updateStats();
 </script>
 </body>
 </html>
