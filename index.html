@@ -2,320 +2,943 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>反射神経チャレンジ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Reaction Rush</title>
 <style>
-* {
-  box-sizing: border-box;
+:root{
+  --bg:#07080d;
+  --panel:#11131c;
+  --panel2:#181b27;
+  --text:#f7f8ff;
+  --muted:#858ba3;
+  --green:#38f59b;
+  --red:#ff496d;
+  --yellow:#ffd84d;
+  --blue:#6b8cff;
+  --border:#272b3b;
 }
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #111;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
-.container {
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
-  text-align: center;
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-h1 {
-  margin-bottom: 5px;
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
 }
-.subtitle {
-  color: #aaa;
-  margin-bottom: 20px;
+button{
+  font:inherit;
 }
-#message {
-  font-size: 20px;
-  margin: 15px 0;
+.app{
+  width:100%;
+  max-width:620px;
+  padding:18px 16px 35px;
 }
-#game {
-  width: 100%;
-  height: 300px;
-  border-radius: 20px;
-  background: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 36px;
-  font-weight: bold;
-  touch-action: manipulation;
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
 }
-button {
-  margin-top: 15px;
-  padding: 15px 25px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 12px;
+.logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.5px;
 }
-#result {
-  margin-top: 20px;
-  font-size: 24px;
-  font-weight: bold;
+.logo span{
+  color:var(--green);
 }
-#rank {
-  font-size: 32px;
-  margin-top: 10px;
+.mode{
+  font-size:11px;
+  color:var(--muted);
+  border:1px solid var(--border);
+  padding:7px 10px;
+  border-radius:20px;
 }
-.stats {
-  margin-top: 25px;
-  padding: 15px;
-  background: #222;
-  border-radius: 15px;
-  line-height: 1.8;
+.card{
+  background:linear-gradient(180deg,#151823,#10121a);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 15px 50px rgba(0,0,0,.3);
 }
-.history {
-  margin-top: 20px;
-  padding: 15px;
-  background: #222;
-  border-radius: 15px;
-  text-align: left;
+#arena{
+  height:330px;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at center,#242938 0%,#141722 55%,#0c0e15 100%);
+  border:1px solid #292d3d;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:background .12s,transform .1s,box-shadow .15s;
 }
-.history h3 {
-  text-align: center;
+#arena.go{
+  background:
+    radial-gradient(circle at center,#39f69c 0%,#109b64 38%,#073b2a 100%);
+  box-shadow:
+    0 0 50px rgba(56,245,155,.28),
+    inset 0 0 60px rgba(255,255,255,.08);
 }
-.history-item {
-  padding: 5px 0;
-  border-bottom: 1px solid #444;
+#arena.bad{
+  background:
+    radial-gradient(circle at center,#ff496d,#551526);
 }
-.reset {
-  background: #555;
-  color: white;
-  font-size: 14px;
+#arena.result{
+  background:
+    radial-gradient(circle at center,#29344f,#121624);
+}
+#arena:active{
+  transform:scale(.985);
+}
+.arena-label{
+  font-size:12px;
+  letter-spacing:3px;
+  color:var(--muted);
+  margin-bottom:15px;
+}
+#mainText{
+  font-size:58px;
+  font-weight:950;
+  letter-spacing:-3px;
+}
+#subText{
+  font-size:15px;
+  color:#b8bdcf;
+  margin-top:10px;
+}
+#arena.go .arena-label,
+#arena.go #subText{
+  color:#d9ffeb;
+}
+#arena.go #mainText{
+  color:white;
+  text-shadow:0 0 30px rgba(255,255,255,.45);
+}
+.start{
+  width:100%;
+  margin-top:14px;
+  padding:17px;
+  border:0;
+  border-radius:16px;
+  background:var(--green);
+  color:#06130d;
+  font-weight:900;
+  font-size:18px;
+  box-shadow:0 8px 25px rgba(56,245,155,.18);
+}
+.start:active{
+  transform:scale(.98);
+}
+.start:disabled{
+  opacity:.4;
+}
+.modes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+.modeBtn{
+  padding:11px 5px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#10121a;
+  color:#aeb3c6;
+  font-size:12px;
+  font-weight:800;
+}
+.modeBtn.active{
+  color:white;
+  border-color:var(--green);
+  background:#12231c;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+.stat{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 5px;
+  text-align:center;
+}
+.stat .label{
+  font-size:10px;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+.stat .value{
+  font-size:20px;
+  font-weight:900;
+}
+.progress{
+  display:flex;
+  gap:6px;
+  margin:16px 2px 0;
+}
+.dot{
+  height:5px;
+  flex:1;
+  border-radius:10px;
+  background:#2a2e3e;
+}
+.dot.done{
+  background:var(--green);
+}
+.dot.current{
+  background:white;
+}
+.resultPanel{
+  margin-top:14px;
+  display:none;
+}
+.resultPanel.show{
+  display:block;
+}
+.resultTitle{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.lastResult{
+  font-size:36px;
+  font-weight:950;
+}
+.rank{
+  display:inline-block;
+  margin-top:6px;
+  padding:5px 10px;
+  border-radius:20px;
+  background:#262a39;
+  font-size:12px;
+  font-weight:900;
+}
+.history{
+  margin-top:14px;
+}
+.historyTitle{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.bars{
+  height:100px;
+  display:flex;
+  align-items:end;
+  gap:5px;
+  padding:5px 0;
+}
+.barWrap{
+  flex:1;
+  height:100%;
+  display:flex;
+  align-items:end;
+}
+.bar{
+  width:100%;
+  min-height:4px;
+  border-radius:5px 5px 2px 2px;
+  background:var(--blue);
+}
+.bar.best{
+  background:var(--green);
+}
+.bar.false{
+  background:var(--red);
+}
+.empty{
+  color:#5e6376;
+  font-size:12px;
+  text-align:center;
+  width:100%;
+  align-self:center;
+}
+.footer{
+  display:flex;
+  justify-content:space-between;
+  margin-top:16px;
+}
+.smallBtn{
+  background:none;
+  border:0;
+  color:#656b80;
+  font-size:12px;
+  padding:8px;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  background:#f7f8ff;
+  color:#10121a;
+  padding:10px 15px;
+  border-radius:30px;
+  font-size:13px;
+  font-weight:800;
+  transition:.25s;
+  z-index:20;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+@media(max-width:380px){
+  #arena{
+    height:290px;
+  }
+  #mainText{
+    font-size:48px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  *{
+    scroll-behavior:auto!important;
+    transition:none!important;
+    animation:none!important;
+  }
 }
 </style>
 </head>
 <body>
-<div class="container">
-<h1>⚡ 反射神経チャレンジ</h1>
-<div class="subtitle">
-どれだけ速く反応できる？
+<div class="app">
+  <div class="header">
+    <div class="logo">REACTION <span>RUSH</span></div>
+    <div class="mode" id="modeLabel">CLASSIC</div>
+  </div>
+  <div class="card">
+    <div id="arena">
+      <div class="arena-label" id="arenaLabel">
+        READY
+      </div>
+      <div id="mainText">
+        TAP START
+      </div>
+      <div id="subText">
+        緑になった瞬間にタップ
+      </div>
+    </div>
+    <button class="start" id="startBtn" onclick="startRound()">
+      START
+    </button>
+    <div class="modes">
+      <button class="modeBtn active" onclick="setMode('classic',this)">
+        CLASSIC
+      </button>
+      <button class="modeBtn" onclick="setMode('speed',this)">
+        SPEED
+      </button>
+      <button class="modeBtn" onclick="setMode('extreme',this)">
+        EXTREME
+      </button>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="label">BEST</div>
+        <div class="value" id="best">---</div>
+      </div>
+      <div class="stat">
+        <div class="label">AVERAGE</div>
+        <div class="value" id="average">---</div>
+      </div>
+      <div class="stat">
+        <div class="label">COMBO</div>
+        <div class="value" id="combo">0</div>
+      </div>
+    </div>
+    <div class="resultPanel" id="resultPanel">
+      <div class="resultTitle">
+        LAST RESULT
+      </div>
+      <div class="lastResult" id="lastResult">
+        ---
+      </div>
+      <div class="rank" id="rank">
+        ---
+      </div>
+    </div>
+    <div class="history">
+      <div class="historyTitle">
+        RECENT PERFORMANCE
+      </div>
+      <div class="bars" id="bars">
+        <div class="empty">
+          プレイすると記録が表示されます
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button class="smallBtn" onclick="resetData()">
+        記録をリセット
+      </button>
+      <button class="smallBtn" onclick="showHelp()">
+        HOW TO PLAY
+      </button>
+    </div>
+  </div>
 </div>
-<div id="message">
-スタートを押してね
-</div>
-<div id="game">
-READY
-</div>
-<button onclick="startGame()">
-スタート
-</button>
-<div id="result"></div>
-<div id="rank"></div>
-<div class="stats">
-🏆 最高記録：
-<span id="best">---</span> ms
-<br>
-📊 平均：
-<span id="average">---</span> ms
-<br>
-🔢 プレイ回数：
-<span id="plays">0</span> 回
-</div>
-<div class="history">
-<h3>📈 最近の記録</h3>
-<div id="history">
-まだ記録がありません
-</div>
-</div>
-<button class="reset" onclick="resetData()">
-記録をリセット
-</button>
-</div>
+<div class="toast" id="toast"></div>
 <script>
-// ====================
-// データ読み込み
-// ====================
-let records =
-  JSON.parse(localStorage.getItem("reactionRecords")) || [];
-let best =
-  localStorage.getItem("reactionBest");
-// ====================
-// 表示更新
-// ====================
-function updateStats() {
-  document.getElementById("plays").textContent =
-    records.length;
-  if (records.length === 0) {
-    document.getElementById("average").textContent =
-      "---";
-    document.getElementById("best").textContent =
-      "---";
-    return;
-  }
-  const total =
-    records.reduce((sum, value) => sum + value, 0);
-  const average =
-    Math.round(total / records.length);
-  document.getElementById("average").textContent =
-    average;
-  document.getElementById("best").textContent =
-    best;
-  updateHistory();
+/* =========================
+   GAME DATA
+========================= */
+const STORAGE_KEY = "reactionRushData_v2";
+let data = loadData();
+let mode = "classic";
+let state = "idle";
+let timer = null;
+let startTime = 0;
+let round = 0;
+let combo = 0;
+let sessionResults = [];
+const TOTAL_ROUNDS = 5;
+/* =========================
+   DOM
+========================= */
+const arena =
+  document.getElementById("arena");
+const mainText =
+  document.getElementById("mainText");
+const subText =
+  document.getElementById("subText");
+const arenaLabel =
+  document.getElementById("arenaLabel");
+const startBtn =
+  document.getElementById("startBtn");
+const modeLabel =
+  document.getElementById("modeLabel");
+const bestEl =
+  document.getElementById("best");
+const averageEl =
+  document.getElementById("average");
+const comboEl =
+  document.getElementById("combo");
+const resultPanel =
+  document.getElementById("resultPanel");
+const lastResult =
+  document.getElementById("lastResult");
+const rankEl =
+  document.getElementById("rank");
+const bars =
+  document.getElementById("bars");
+const progress =
+  document.getElementById("progress");
+const toast =
+  document.getElementById("toast");
+/* =========================
+   LOAD / SAVE
+========================= */
+function loadData(){
+  try{
+    const saved =
+      localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      const parsed =
+        JSON.parse(saved);
+      return parsed;
+    }
+  }catch(e){}
+  return {
+    records:[],
+    best:{
+      classic:null,
+      speed:null,
+      extreme:null
+    }
+  };
 }
-// ====================
-// 履歴表示
-// ====================
-function updateHistory() {
-  const history =
-    document.getElementById("history");
-  if (records.length === 0) {
-    history.innerHTML =
-      "まだ記録がありません";
+function saveData(){
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+}
+/* =========================
+   MODE
+========================= */
+function setMode(newMode, button){
+  if(state !== "idle") return;
+  mode = newMode;
+  document
+    .querySelectorAll(".modeBtn")
+    .forEach(btn =>
+      btn.classList.remove("active")
+    );
+  button.classList.add("active");
+  modeLabel.textContent =
+    newMode.toUpperCase();
+  updateStats();
+}
+/* =========================
+   DIFFICULTY
+========================= */
+function getDelay(){
+  if(mode === "classic"){
+    return 1800 + Math.random()*3000;
+  }
+  if(mode === "speed"){
+    return 900 + Math.random()*1800;
+  }
+  return 500 + Math.random()*1000;
+}
+/* =========================
+   START
+========================= */
+function startRound(){
+  if(state !== "idle") return;
+  if(round >= TOTAL_ROUNDS){
+    round = 0;
+    combo = 0;
+    sessionResults = [];
+  }
+  round++;
+  state = "waiting";
+  startBtn.disabled = true;
+  arena.className = "";
+  arenaLabel.textContent =
+    "WAIT";
+  mainText.textContent =
+    "DON'T TAP";
+  subText.textContent =
+    "合図が出るまで待て";
+  updateProgress();
+  const delay = getDelay();
+  timer = setTimeout(go, delay);
+}
+/* =========================
+   GO
+========================= */
+function go(){
+  state = "go";
+  startTime =
+    performance.now();
+  arena.className = "go";
+  arenaLabel.textContent =
+    "GO";
+  mainText.textContent =
+    "TAP!";
+  subText.textContent =
+    "NOW!";
+  playBeep();
+}
+/* =========================
+   TAP
+========================= */
+arena.addEventListener("pointerdown", handleTap);
+function handleTap(e){
+  e.preventDefault();
+  if(state === "waiting"){
+    falseStart();
     return;
   }
-  const recent =
-    records.slice(-10).reverse();
-  history.innerHTML =
-    recent.map((value, index) => {
+  if(state !== "go") return;
+  const reaction =
+    performance.now() - startTime;
+  finishRound(
+    Math.round(reaction)
+  );
+}
+/* =========================
+   FALSE START
+========================= */
+function falseStart(){
+  clearTimeout(timer);
+  state = "result";
+  combo = 0;
+  arena.className = "bad";
+  arenaLabel.textContent =
+    "FALSE START";
+  mainText.textContent =
+    "TOO SOON";
+  subText.textContent =
+    "早すぎ！";
+  lastResult.textContent =
+    "FOUL";
+  rankEl.textContent =
+    "COMBO RESET";
+  resultPanel.classList.add("show");
+  playBad();
+  setTimeout(nextRound,900);
+}
+/* =========================
+   FINISH
+========================= */
+function finishRound(ms){
+  state = "result";
+  sessionResults.push(ms);
+  data.records.push({
+    time:ms,
+    mode:mode,
+    date:Date.now()
+  });
+  if(data.records.length > 100){
+    data.records =
+      data.records.slice(-100);
+  }
+  if(
+    !data.best[mode] ||
+    ms < data.best[mode]
+  ){
+    data.best[mode] = ms;
+    showToast("🏆 NEW PERSONAL BEST!");
+  }
+  if(ms < 350){
+    combo++;
+  }else{
+    combo = 0;
+  }
+  arena.className = "result";
+  arenaLabel.textContent =
+    "REACTION";
+  mainText.textContent =
+    ms + " ms";
+  subText.textContent =
+    getComment(ms);
+  lastResult.textContent =
+    ms + " ms";
+  rankEl.textContent =
+    getRank(ms);
+  resultPanel.classList.add("show");
+  saveData();
+  updateStats();
+  playGood();
+  setTimeout(nextRound,1100);
+}
+/* =========================
+   NEXT ROUND
+========================= */
+function nextRound(){
+  if(round >= TOTAL_ROUNDS){
+    finishSession();
+    return;
+  }
+  state = "idle";
+  startBtn.disabled = false;
+  arena.className = "";
+  arenaLabel.textContent =
+    "NEXT";
+  mainText.textContent =
+    "READY?";
+  subText.textContent =
+    "STARTで次のラウンド";
+  updateProgress();
+}
+/* =========================
+   SESSION FINISH
+========================= */
+function finishSession(){
+  state = "idle";
+  startBtn.disabled = false;
+  arena.className = "result";
+  arenaLabel.textContent =
+    "SESSION COMPLETE";
+  if(sessionResults.length){
+    const avg =
+      Math.round(
+        sessionResults.reduce(
+          (a,b)=>a+b,0
+        ) / sessionResults.length
+      );
+    mainText.textContent =
+      avg + " ms";
+    subText.textContent =
+      "5ラウンド平均";
+    if(
+      avg < 250
+    ){
+      showToast("🔥 AMAZING SESSION!");
+    }else if(
+      avg < 350
+    ){
+      showToast("⚡ NICE SESSION!");
+    }
+  }
+  round = TOTAL_ROUNDS;
+}
+/* =========================
+   RANK
+========================= */
+function getRank(ms){
+  if(ms < 150)
+    return "S+ ⚡";
+  if(ms < 200)
+    return "S 🏆";
+  if(ms < 250)
+    return "A 🔥";
+  if(ms < 300)
+    return "B+ 🎯";
+  if(ms < 350)
+    return "B 👍";
+  if(ms < 450)
+    return "C 🙂";
+  return "D 🐢";
+}
+function getComment(ms){
+  if(ms < 150)
+    return "超高速。";
+  if(ms < 200)
+    return "めちゃ速い！";
+  if(ms < 250)
+    return "かなり速い！";
+  if(ms < 300)
+    return "いい反応！";
+  if(ms < 350)
+    return "まだ伸ばせる。";
+  if(ms < 450)
+    return "もう一回！";
+  return "集中！";
+}
+/* =========================
+   STATS
+========================= */
+function updateStats(){
+  const best =
+    data.best[mode];
+  bestEl.textContent =
+    best ? best : "---";
+  const records =
+    data.records.filter(
+      r => r.mode === mode
+    );
+  if(records.length){
+    const avg =
+      Math.round(
+        records.reduce(
+          (sum,r)=>sum+r.time,0
+        ) / records.length
+      );
+    averageEl.textContent =
+      avg;
+  }else{
+    averageEl.textContent =
+      "---";
+  }
+  comboEl.textContent =
+    combo;
+  updateBars();
+}
+/* =========================
+   GRAPH
+========================= */
+function updateBars(){
+  const records =
+    data.records
+      .filter(r=>r.mode===mode)
+      .slice(-12);
+  if(!records.length){
+    bars.innerHTML =
+      '<div class="empty">プレイすると記録が表示されます</div>';
+    return;
+  }
+  const max =
+    Math.max(
+      ...records.map(r=>r.time),
+      500
+    );
+  bars.innerHTML =
+    records.map(r=>{
+      const height =
+        Math.max(
+          8,
+          100-(r.time/max*75)
+        );
+      const isBest =
+        r.time === data.best[mode];
       return `
-        <div class="history-item">
-          ${records.length - index}回目：
-          <strong>${value} ms</strong>
+        <div class="barWrap">
+          <div
+            class="bar ${isBest?"best":""}"
+            style="height:${height}%"
+            title="${r.time} ms">
+          </div>
         </div>
       `;
     }).join("");
 }
-// ====================
-// ゲーム
-// ====================
-let timer;
-let startTime;
-let waiting = false;
-let playing = false;
-function startGame() {
-  if (playing) return;
-  playing = true;
-  waiting = true;
-  document.getElementById("message").textContent =
-    "まだ押さないで！";
-  document.getElementById("game").textContent =
-    "WAIT...";
-  document.getElementById("game").style.background =
-    "#333";
-  document.getElementById("result").textContent =
-    "";
-  document.getElementById("rank").textContent =
-    "";
-  const delay =
-    Math.floor(Math.random() * 3000) + 2000;
-  timer = setTimeout(() => {
-    waiting = false;
-    startTime =
-      performance.now();
-    document.getElementById("game").textContent =
-      "TAP!";
-    document.getElementById("game").style.background =
-      "#00aa55";
-    document.getElementById("message").textContent =
-      "今だ！！！";
-  }, delay);
+/* =========================
+   PROGRESS
+========================= */
+function updateProgress(){
+  progress.innerHTML = "";
+  for(let i=1;i<=TOTAL_ROUNDS;i++){
+    const dot =
+      document.createElement("div");
+    dot.className = "dot";
+    if(i < round)
+      dot.classList.add("done");
+    if(i === round)
+      dot.classList.add("current");
+    progress.appendChild(dot);
+  }
 }
-// ====================
-// タップ判定
-// ====================
-document.getElementById("game").addEventListener(
-  "click",
-  () => {
-    if (!playing) return;
-    // フライング
-    if (waiting) {
-      clearTimeout(timer);
-      document.getElementById("message").textContent =
-        "フライング！😈";
-      document.getElementById("game").textContent =
-        "FAIL";
-      document.getElementById("game").style.background =
-        "#aa2222";
-      document.getElementById("result").textContent =
-        "早すぎ！";
-      playing = false;
-      waiting = false;
-      return;
-    }
-    // 反応速度
-    const reaction =
-      Math.round(
-        performance.now() - startTime
-      );
-    records.push(reaction);
-    // 最高記録
-    if (!best || reaction < Number(best)) {
-      best = reaction;
-      localStorage.setItem(
-        "reactionBest",
-        best
-      );
-      document.getElementById("result").textContent =
-        reaction + " ms 🎉 NEW RECORD!";
-    } else {
-      document.getElementById("result").textContent =
-        reaction + " ms";
-    }
-    // ランク
-    let rank;
-    if (reaction < 200) {
-      rank = "S 🏆";
-    } else if (reaction < 250) {
-      rank = "A 🔥";
-    } else if (reaction < 350) {
-      rank = "B 👍";
-    } else if (reaction < 500) {
-      rank = "C 🙂";
-    } else {
-      rank = "D 🐢";
-    }
-    document.getElementById("rank").textContent =
-      "RANK " + rank;
-    // 保存
-    localStorage.setItem(
-      "reactionRecords",
-      JSON.stringify(records)
+/* =========================
+   AUDIO
+========================= */
+let audioContext;
+function getAudio(){
+  if(!audioContext){
+    audioContext =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+  }
+  return audioContext;
+}
+function beep(freq,duration,type="sine"){
+  try{
+    const ctx =
+      getAudio();
+    const osc =
+      ctx.createOscillator();
+    const gain =
+      ctx.createGain();
+    osc.type = type;
+    osc.frequency.value =
+      freq;
+    gain.gain.setValueAtTime(
+      .0001,
+      ctx.currentTime
     );
-    document.getElementById("message").textContent =
-      "ナイス！";
-    document.getElementById("game").textContent =
-      reaction + " ms";
-    document.getElementById("game").style.background =
-      "#333";
-    updateStats();
-    playing = false;
+    gain.gain.exponentialRampToValueAtTime(
+      .08,
+      ctx.currentTime+.01
+    );
+    gain.gain.exponentialRampToValueAtTime(
+      .0001,
+      ctx.currentTime+duration
+    );
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(
+      ctx.currentTime+duration
+    );
+  }catch(e){}
+}
+function playBeep(){
+  beep(700,.08,"square");
+}
+function playGood(){
+  beep(900,.07);
+  setTimeout(
+    ()=>beep(1200,.08),
+    70
+  );
+}
+function playBad(){
+  beep(180,.15,"sawtooth");
+}
+/* =========================
+   TOAST
+========================= */
+let toastTimer;
+function showToast(text){
+  toast.textContent =
+    text;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer =
+    setTimeout(
+      ()=>toast.classList.remove("show"),
+      1800
+    );
+}
+/* =========================
+   HELP
+========================= */
+function showHelp(){
+  alert(
+`REACTION RUSH
+1. STARTを押す
+2. 「DON'T TAP」の間は待つ
+3. 緑のGOが出た瞬間にタップ
+4. 5回で1 SESSION
+早く反応するほど高ランク！
+S+：150ms未満
+S：200ms未満
+A：250ms未満
+B+：300ms未満
+B：350ms未満
+C：450ms未満
+D：それ以上
+フライングするとコンボがリセットされます。`
+  );
+}
+/* =========================
+   RESET
+========================= */
+function resetData(){
+  if(
+    !confirm(
+      "すべての記録を削除しますか？"
+    )
+  ) return;
+  data = {
+    records:[],
+    best:{
+      classic:null,
+      speed:null,
+      extreme:null
+    }
+  };
+  round = 0;
+  combo = 0;
+  sessionResults = [];
+  saveData();
+  updateStats();
+  resultPanel.classList.remove("show");
+  arena.className = "";
+  arenaLabel.textContent =
+    "READY";
+  mainText.textContent =
+    "TAP START";
+  subText.textContent =
+    "緑になった瞬間にタップ";
+  startBtn.disabled = false;
+  updateProgress();
+  showToast("記録を削除しました");
+}
+/* =========================
+   KEYBOARD
+========================= */
+document.addEventListener(
+  "keydown",
+  e => {
+    if(e.code !== "Space") return;
+    e.preventDefault();
+    if(state === "idle"){
+      startRound();
+    }else{
+      handleTap(e);
+    }
   }
 );
-// ====================
-// リセット
-// ====================
-function resetData() {
-  if (!confirm("記録を全部消しますか？")) {
-    return;
-  }
-  records = [];
-  best = null;
-  localStorage.removeItem(
-    "reactionRecords"
-  );
-  localStorage.removeItem(
-    "reactionBest"
-  );
-  document.getElementById("result").textContent =
-    "";
-  document.getElementById("rank").textContent =
-    "";
-  document.getElementById("message").textContent =
-    "記録をリセットしました";
-  document.getElementById("game").textContent =
-    "READY";
-  updateStats();
-}
-// 初期表示
+/* =========================
+   INIT
+========================= */
 updateStats();
+updateProgress();
 </script>
 </body>
 </html>
