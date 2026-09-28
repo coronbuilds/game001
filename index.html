@@ -3,942 +3,1170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Reaction Rush</title>
+<title>RED OR DEAD</title>
+
 <style>
-:root{
-  --bg:#07080d;
-  --panel:#11131c;
-  --panel2:#181b27;
-  --text:#f7f8ff;
-  --muted:#858ba3;
-  --green:#38f59b;
-  --red:#ff496d;
-  --yellow:#ffd84d;
-  --blue:#6b8cff;
-  --border:#272b3b;
-}
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
+
 html,body{
   margin:0;
-  padding:0;
-  background:var(--bg);
-  color:var(--text);
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#08090d;
+  color:white;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
+
 body{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
+  touch-action:manipulation;
 }
-button{
-  font:inherit;
-}
-.app{
+
+#game{
+  position:relative;
   width:100%;
-  max-width:620px;
-  padding:18px 16px 35px;
+  height:100%;
+  max-width:600px;
+  margin:auto;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 20%,#20243a 0%,#0d0f18 42%,#05060a 100%);
 }
-.header{
+
+#game.shake{
+  animation:shake .18s linear;
+}
+
+@keyframes shake{
+  0%{transform:translate(0)}
+  25%{transform:translate(8px,-5px)}
+  50%{transform:translate(-7px,5px)}
+  75%{transform:translate(5px,3px)}
+  100%{transform:translate(0)}
+}
+
+#hud{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:20;
+  padding:14px 16px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
+  align-items:flex-start;
+  pointer-events:none;
 }
-.logo{
+
+.stat{
+  text-align:center;
+  min-width:65px;
+}
+
+.label{
+  font-size:10px;
+  color:#8f95a8;
+  letter-spacing:1px;
+  font-weight:800;
+}
+
+.value{
   font-size:22px;
   font-weight:900;
-  letter-spacing:-.5px;
+  line-height:1.1;
 }
-.logo span{
-  color:var(--green);
+
+#score{
+  font-size:28px;
 }
-.mode{
-  font-size:11px;
-  color:var(--muted);
-  border:1px solid var(--border);
-  padding:7px 10px;
-  border-radius:20px;
+
+#combo{
+  color:#ffe45c;
 }
-.card{
-  background:linear-gradient(180deg,#151823,#10121a);
-  border:1px solid var(--border);
-  border-radius:24px;
-  padding:18px;
-  box-shadow:0 15px 50px rgba(0,0,0,.3);
+
+#lives{
+  color:#ff4d6d;
+  letter-spacing:2px;
 }
+
 #arena{
-  height:330px;
-  border-radius:20px;
+  position:absolute;
+  inset:80px 0 0;
+  overflow:hidden;
+}
+
+.target{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  font-size:clamp(20px,7vw,36px);
+  font-weight:900;
+  transform:translate(-50%,-50%) scale(.2);
+  animation:appear .12s ease-out forwards;
+  box-shadow:0 0 25px rgba(255,255,255,.12);
+  z-index:5;
+}
+
+.target.safe{
   background:
-    radial-gradient(circle at center,#242938 0%,#141722 55%,#0c0e15 100%);
-  border:1px solid #292d3d;
+    radial-gradient(circle at 35% 30%,#fff 0%,#8cffb0 7%,#20df72 45%,#087d42 100%);
+  border:3px solid #baffd0;
+  box-shadow:
+    0 0 20px rgba(32,223,114,.55),
+    inset 0 0 15px rgba(255,255,255,.4);
+}
+
+.target.bomb{
+  background:
+    radial-gradient(circle at 35% 30%,#ff9c9c 0%,#ff304d 12%,#9c0923 55%,#3d0610 100%);
+  border:3px solid #ff647a;
+  box-shadow:
+    0 0 25px rgba(255,35,65,.7),
+    inset 0 0 15px rgba(255,255,255,.2);
+}
+
+.target.gold{
+  background:
+    radial-gradient(circle at 35% 30%,#fff 0%,#fff59a 8%,#ffd21f 45%,#bd7100 100%);
+  border:3px solid #fff4a0;
+  box-shadow:
+    0 0 30px rgba(255,210,30,.85),
+    inset 0 0 15px rgba(255,255,255,.5);
+}
+
+.target.fake{
+  opacity:.85;
+  filter:saturate(.7);
+}
+
+@keyframes appear{
+  to{transform:translate(-50%,-50%) scale(1)}
+}
+
+.target.hit{
+  animation:hit .18s ease-out forwards;
+}
+
+@keyframes hit{
+  to{
+    transform:translate(-50%,-50%) scale(1.7);
+    opacity:0;
+  }
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  top:42%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  z-index:15;
+  pointer-events:none;
+  width:90%;
+}
+
+#message .big{
+  font-size:clamp(34px,11vw,64px);
+  font-weight:1000;
+  letter-spacing:2px;
+  text-shadow:0 5px 30px rgba(0,0,0,.7);
+}
+
+#message .small{
+  margin-top:8px;
+  color:#aeb4c8;
+  font-size:14px;
+  font-weight:700;
+}
+
+.pop{
+  position:absolute;
+  pointer-events:none;
+  z-index:30;
+  font-weight:1000;
+  font-size:25px;
+  animation:pop .65s ease-out forwards;
+}
+
+@keyframes pop{
+  0%{
+    transform:translate(-50%,-50%) scale(.7);
+    opacity:0;
+  }
+  20%{
+    transform:translate(-50%,-70%) scale(1.2);
+    opacity:1;
+  }
+  100%{
+    transform:translate(-50%,-150%) scale(1);
+    opacity:0;
+  }
+}
+
+.particle{
+  position:absolute;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:25;
+  animation:particle .5s ease-out forwards;
+}
+
+@keyframes particle{
+  to{
+    transform:translate(var(--x),var(--y)) scale(0);
+    opacity:0;
+  }
+}
+
+#startScreen,
+#gameOver{
+  position:absolute;
+  inset:0;
+  z-index:50;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,40,65,.18),transparent 35%),
+    rgba(4,5,9,.94);
   display:flex;
   flex-direction:column;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
+  padding:25px;
   text-align:center;
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
-  touch-action:manipulation;
-  transition:background .12s,transform .1s,box-shadow .15s;
 }
-#arena.go{
-  background:
-    radial-gradient(circle at center,#39f69c 0%,#109b64 38%,#073b2a 100%);
-  box-shadow:
-    0 0 50px rgba(56,245,155,.28),
-    inset 0 0 60px rgba(255,255,255,.08);
+
+.hidden{
+  display:none!important;
 }
-#arena.bad{
-  background:
-    radial-gradient(circle at center,#ff496d,#551526);
-}
-#arena.result{
-  background:
-    radial-gradient(circle at center,#29344f,#121624);
-}
-#arena:active{
-  transform:scale(.985);
-}
-.arena-label{
-  font-size:12px;
-  letter-spacing:3px;
-  color:var(--muted);
-  margin-bottom:15px;
-}
-#mainText{
-  font-size:58px;
-  font-weight:950;
+
+.logo{
+  font-size:clamp(42px,13vw,76px);
+  line-height:.9;
+  font-weight:1000;
   letter-spacing:-3px;
 }
-#subText{
-  font-size:15px;
-  color:#b8bdcf;
-  margin-top:10px;
+
+.logo span{
+  color:#ff304d;
 }
-#arena.go .arena-label,
-#arena.go #subText{
-  color:#d9ffeb;
-}
-#arena.go #mainText{
-  color:white;
-  text-shadow:0 0 30px rgba(255,255,255,.45);
-}
-.start{
-  width:100%;
+
+.subtitle{
   margin-top:14px;
-  padding:17px;
+  color:#aeb4c8;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.howto{
+  margin-top:24px;
+  width:min(350px,90%);
+  padding:16px;
+  border:1px solid #292d3d;
+  background:#11131b;
+  border-radius:18px;
+  font-size:14px;
+  line-height:1.8;
+}
+
+.howto b{
+  color:#65ff9a;
+}
+
+.howto .danger{
+  color:#ff5268;
+}
+
+button{
   border:0;
-  border-radius:16px;
-  background:var(--green);
-  color:#06130d;
-  font-weight:900;
-  font-size:18px;
-  box-shadow:0 8px 25px rgba(56,245,155,.18);
+  color:white;
+  font-weight:1000;
+  cursor:pointer;
 }
-.start:active{
-  transform:scale(.98);
+
+.mainBtn{
+  margin-top:24px;
+  width:min(330px,90%);
+  padding:17px 20px;
+  border-radius:17px;
+  font-size:19px;
+  background:linear-gradient(135deg,#ff304d,#b90024);
+  box-shadow:0 8px 30px rgba(255,30,65,.28);
 }
-.start:disabled{
-  opacity:.4;
+
+.mainBtn:active{
+  transform:scale(.96);
 }
-.modes{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:14px;
-}
-.modeBtn{
-  padding:11px 5px;
+
+.secondary{
+  margin-top:12px;
+  background:#171a24;
+  border:1px solid #303547;
+  padding:12px 25px;
   border-radius:12px;
-  border:1px solid var(--border);
-  background:#10121a;
-  color:#aeb3c6;
-  font-size:12px;
-  font-weight:800;
+  font-size:13px;
 }
-.modeBtn.active{
-  color:white;
-  border-color:var(--green);
-  background:#12231c;
-}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:14px;
-}
-.stat{
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:12px 5px;
-  text-align:center;
-}
-.stat .label{
-  font-size:10px;
-  color:var(--muted);
-  margin-bottom:5px;
-}
-.stat .value{
-  font-size:20px;
+
+#resultTitle{
+  color:#ff4059;
+  font-size:16px;
   font-weight:900;
+  letter-spacing:2px;
 }
-.progress{
-  display:flex;
-  gap:6px;
-  margin:16px 2px 0;
+
+#finalScore{
+  margin-top:4px;
+  font-size:68px;
+  font-weight:1000;
 }
-.dot{
-  height:5px;
-  flex:1;
+
+.resultLine{
+  margin-top:4px;
+  color:#aeb4c8;
+  font-size:14px;
+}
+
+#newRecord{
+  margin-top:12px;
+  color:#ffe45c;
+  font-weight:1000;
+  font-size:14px;
+}
+
+#progress{
+  position:absolute;
+  top:76px;
+  left:16px;
+  right:16px;
+  height:4px;
+  background:#252938;
   border-radius:10px;
-  background:#2a2e3e;
+  overflow:hidden;
+  z-index:21;
 }
-.dot.done{
-  background:var(--green);
-}
-.dot.current{
-  background:white;
-}
-.resultPanel{
-  margin-top:14px;
-  display:none;
-}
-.resultPanel.show{
-  display:block;
-}
-.resultTitle{
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:10px;
-}
-.lastResult{
-  font-size:36px;
-  font-weight:950;
-}
-.rank{
-  display:inline-block;
-  margin-top:6px;
-  padding:5px 10px;
-  border-radius:20px;
-  background:#262a39;
-  font-size:12px;
-  font-weight:900;
-}
-.history{
-  margin-top:14px;
-}
-.historyTitle{
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:10px;
-}
-.bars{
-  height:100px;
-  display:flex;
-  align-items:end;
-  gap:5px;
-  padding:5px 0;
-}
-.barWrap{
-  flex:1;
+
+#progressBar{
   height:100%;
-  display:flex;
-  align-items:end;
+  width:0%;
+  background:linear-gradient(90deg,#40ff91,#ffe34e,#ff304d);
+  transition:width .2s;
 }
-.bar{
-  width:100%;
-  min-height:4px;
-  border-radius:5px 5px 2px 2px;
-  background:var(--blue);
-}
-.bar.best{
-  background:var(--green);
-}
-.bar.false{
-  background:var(--red);
-}
-.empty{
-  color:#5e6376;
-  font-size:12px;
-  text-align:center;
-  width:100%;
-  align-self:center;
-}
-.footer{
-  display:flex;
-  justify-content:space-between;
-  margin-top:16px;
-}
-.smallBtn{
-  background:none;
-  border:0;
-  color:#656b80;
-  font-size:12px;
-  padding:8px;
-}
-.toast{
-  position:fixed;
+
+#fever{
+  position:absolute;
+  top:88px;
   left:50%;
-  bottom:25px;
-  transform:translateX(-50%) translateY(20px);
-  opacity:0;
-  pointer-events:none;
-  background:#f7f8ff;
-  color:#10121a;
-  padding:10px 15px;
-  border-radius:30px;
-  font-size:13px;
-  font-weight:800;
-  transition:.25s;
+  transform:translateX(-50%);
   z-index:20;
+  font-weight:1000;
+  font-size:12px;
+  color:#ffe45c;
+  opacity:0;
+  transition:.2s;
 }
-.toast.show{
+
+#fever.active{
   opacity:1;
-  transform:translateX(-50%) translateY(0);
+  animation:feverPulse .45s infinite alternate;
 }
-@media(max-width:380px){
-  #arena{
-    height:290px;
-  }
-  #mainText{
-    font-size:48px;
-  }
+
+@keyframes feverPulse{
+  from{transform:translateX(-50%) scale(1)}
+  to{transform:translateX(-50%) scale(1.15)}
 }
-@media(prefers-reduced-motion:reduce){
-  *{
-    scroll-behavior:auto!important;
-    transition:none!important;
-    animation:none!important;
-  }
+
+#coinHud{
+  position:absolute;
+  bottom:12px;
+  right:14px;
+  z-index:20;
+  font-size:12px;
+  color:#ffd84c;
+  font-weight:900;
 }
 </style>
 </head>
+
 <body>
-<div class="app">
-  <div class="header">
-    <div class="logo">REACTION <span>RUSH</span></div>
-    <div class="mode" id="modeLabel">CLASSIC</div>
-  </div>
-  <div class="card">
-    <div id="arena">
-      <div class="arena-label" id="arenaLabel">
-        READY
-      </div>
-      <div id="mainText">
-        TAP START
-      </div>
-      <div id="subText">
-        緑になった瞬間にタップ
-      </div>
+
+<div id="game">
+
+  <div id="hud">
+    <div class="stat">
+      <div class="label">SCORE</div>
+      <div class="value" id="score">0</div>
     </div>
-    <button class="start" id="startBtn" onclick="startRound()">
-      START
+
+    <div class="stat">
+      <div class="label">COMBO</div>
+      <div class="value" id="combo">x1</div>
+    </div>
+
+    <div class="stat">
+      <div class="label">LIFE</div>
+      <div class="value" id="lives">♥♥♥</div>
+    </div>
+  </div>
+
+  <div id="progress">
+    <div id="progressBar"></div>
+  </div>
+
+  <div id="fever">🔥 FEVER MODE 🔥</div>
+
+  <div id="arena"></div>
+
+  <div id="message">
+    <div class="big"></div>
+    <div class="small"></div>
+  </div>
+
+  <div id="coinHud">🪙 0</div>
+
+  <!-- START -->
+
+  <div id="startScreen">
+
+    <div class="logo">RED<br><span>OR DEAD</span></div>
+
+    <div class="subtitle">
+      一瞬の判断で、どこまで生き残れる？
+    </div>
+
+    <div class="howto">
+      🟢 <b>SAFE</b> → タップ<br>
+      🟡 <b>GOLD</b> → タップすると大量得点<br>
+      🔴 <span class="danger">BOMB</span> → 絶対にタップしない<br>
+      <br>
+      コンボを繋げるほどスピードアップ。
+    </div>
+
+    <button class="mainBtn" id="startBtn">
+      GAME START
     </button>
-    <div class="modes">
-      <button class="modeBtn active" onclick="setMode('classic',this)">
-        CLASSIC
-      </button>
-      <button class="modeBtn" onclick="setMode('speed',this)">
-        SPEED
-      </button>
-      <button class="modeBtn" onclick="setMode('extreme',this)">
-        EXTREME
-      </button>
-    </div>
-    <div class="progress" id="progress"></div>
-    <div class="stats">
-      <div class="stat">
-        <div class="label">BEST</div>
-        <div class="value" id="best">---</div>
-      </div>
-      <div class="stat">
-        <div class="label">AVERAGE</div>
-        <div class="value" id="average">---</div>
-      </div>
-      <div class="stat">
-        <div class="label">COMBO</div>
-        <div class="value" id="combo">0</div>
-      </div>
-    </div>
-    <div class="resultPanel" id="resultPanel">
-      <div class="resultTitle">
-        LAST RESULT
-      </div>
-      <div class="lastResult" id="lastResult">
-        ---
-      </div>
-      <div class="rank" id="rank">
-        ---
-      </div>
-    </div>
-    <div class="history">
-      <div class="historyTitle">
-        RECENT PERFORMANCE
-      </div>
-      <div class="bars" id="bars">
-        <div class="empty">
-          プレイすると記録が表示されます
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      <button class="smallBtn" onclick="resetData()">
-        記録をリセット
-      </button>
-      <button class="smallBtn" onclick="showHelp()">
-        HOW TO PLAY
-      </button>
-    </div>
+
+    <button class="secondary" id="resetBtn">
+      データをリセット
+    </button>
+
   </div>
+
+  <!-- GAME OVER -->
+
+  <div id="gameOver" class="hidden">
+
+    <div id="resultTitle">GAME OVER</div>
+
+    <div id="finalScore">0</div>
+
+    <div class="resultLine">
+      BEST SCORE　<span id="bestScore">0</span>
+    </div>
+
+    <div class="resultLine">
+      BEST COMBO　<span id="bestCombo">0</span>
+    </div>
+
+    <div id="newRecord" class="hidden">
+      🏆 NEW RECORD
+    </div>
+
+    <button class="mainBtn" id="retryBtn">
+      RETRY
+    </button>
+
+    <button class="secondary" id="homeBtn">
+      TITLE
+    </button>
+
+  </div>
+
 </div>
-<div class="toast" id="toast"></div>
+
 <script>
 /* =========================
-   GAME DATA
+   RED OR DEAD
 ========================= */
-const STORAGE_KEY = "reactionRushData_v2";
-let data = loadData();
-let mode = "classic";
-let state = "idle";
-let timer = null;
-let startTime = 0;
-let round = 0;
+
+const arena = document.getElementById("arena");
+const game = document.getElementById("game");
+
+const scoreEl = document.getElementById("score");
+const comboEl = document.getElementById("combo");
+const livesEl = document.getElementById("lives");
+const progressBar = document.getElementById("progressBar");
+const feverEl = document.getElementById("fever");
+const coinHud = document.getElementById("coinHud");
+
+const startScreen = document.getElementById("startScreen");
+const gameOver = document.getElementById("gameOver");
+
+const finalScore = document.getElementById("finalScore");
+const bestScoreEl = document.getElementById("bestScore");
+const bestComboEl = document.getElementById("bestCombo");
+const newRecordEl = document.getElementById("newRecord");
+
+const message = document.getElementById("message");
+
+let score = 0;
 let combo = 0;
-let sessionResults = [];
-const TOTAL_ROUNDS = 5;
-/* =========================
-   DOM
-========================= */
-const arena =
-  document.getElementById("arena");
-const mainText =
-  document.getElementById("mainText");
-const subText =
-  document.getElementById("subText");
-const arenaLabel =
-  document.getElementById("arenaLabel");
-const startBtn =
-  document.getElementById("startBtn");
-const modeLabel =
-  document.getElementById("modeLabel");
-const bestEl =
-  document.getElementById("best");
-const averageEl =
-  document.getElementById("average");
-const comboEl =
-  document.getElementById("combo");
-const resultPanel =
-  document.getElementById("resultPanel");
-const lastResult =
-  document.getElementById("lastResult");
-const rankEl =
-  document.getElementById("rank");
-const bars =
-  document.getElementById("bars");
-const progress =
-  document.getElementById("progress");
-const toast =
-  document.getElementById("toast");
-/* =========================
-   LOAD / SAVE
-========================= */
-function loadData(){
+let bestComboRun = 0;
+let lives = 3;
+
+let running = false;
+let spawnTimer = null;
+let lifeTimer = null;
+
+let level = 0;
+let elapsed = 0;
+let fever = false;
+let feverTimer = 0;
+
+let coins = Number(localStorage.getItem("rod_coins") || 0);
+let bestScore = Number(localStorage.getItem("rod_best") || 0);
+let bestCombo = Number(localStorage.getItem("rod_combo") || 0);
+
+coinHud.textContent = "🪙 " + coins;
+
+/* ---------- SOUND ---------- */
+
+let audioCtx = null;
+
+function sound(freq, duration=.08, type="sine", volume=.04){
   try{
-    const saved =
-      localStorage.getItem(STORAGE_KEY);
-    if(saved){
-      const parsed =
-        JSON.parse(saved);
-      return parsed;
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
-  }catch(e){}
-  return {
-    records:[],
-    best:{
-      classic:null,
-      speed:null,
-      extreme:null
-    }
-  };
-}
-function saveData(){
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(data)
-  );
-}
-/* =========================
-   MODE
-========================= */
-function setMode(newMode, button){
-  if(state !== "idle") return;
-  mode = newMode;
-  document
-    .querySelectorAll(".modeBtn")
-    .forEach(btn =>
-      btn.classList.remove("active")
-    );
-  button.classList.add("active");
-  modeLabel.textContent =
-    newMode.toUpperCase();
-  updateStats();
-}
-/* =========================
-   DIFFICULTY
-========================= */
-function getDelay(){
-  if(mode === "classic"){
-    return 1800 + Math.random()*3000;
-  }
-  if(mode === "speed"){
-    return 900 + Math.random()*1800;
-  }
-  return 500 + Math.random()*1000;
-}
-/* =========================
-   START
-========================= */
-function startRound(){
-  if(state !== "idle") return;
-  if(round >= TOTAL_ROUNDS){
-    round = 0;
-    combo = 0;
-    sessionResults = [];
-  }
-  round++;
-  state = "waiting";
-  startBtn.disabled = true;
-  arena.className = "";
-  arenaLabel.textContent =
-    "WAIT";
-  mainText.textContent =
-    "DON'T TAP";
-  subText.textContent =
-    "合図が出るまで待て";
-  updateProgress();
-  const delay = getDelay();
-  timer = setTimeout(go, delay);
-}
-/* =========================
-   GO
-========================= */
-function go(){
-  state = "go";
-  startTime =
-    performance.now();
-  arena.className = "go";
-  arenaLabel.textContent =
-    "GO";
-  mainText.textContent =
-    "TAP!";
-  subText.textContent =
-    "NOW!";
-  playBeep();
-}
-/* =========================
-   TAP
-========================= */
-arena.addEventListener("pointerdown", handleTap);
-function handleTap(e){
-  e.preventDefault();
-  if(state === "waiting"){
-    falseStart();
-    return;
-  }
-  if(state !== "go") return;
-  const reaction =
-    performance.now() - startTime;
-  finishRound(
-    Math.round(reaction)
-  );
-}
-/* =========================
-   FALSE START
-========================= */
-function falseStart(){
-  clearTimeout(timer);
-  state = "result";
-  combo = 0;
-  arena.className = "bad";
-  arenaLabel.textContent =
-    "FALSE START";
-  mainText.textContent =
-    "TOO SOON";
-  subText.textContent =
-    "早すぎ！";
-  lastResult.textContent =
-    "FOUL";
-  rankEl.textContent =
-    "COMBO RESET";
-  resultPanel.classList.add("show");
-  playBad();
-  setTimeout(nextRound,900);
-}
-/* =========================
-   FINISH
-========================= */
-function finishRound(ms){
-  state = "result";
-  sessionResults.push(ms);
-  data.records.push({
-    time:ms,
-    mode:mode,
-    date:Date.now()
-  });
-  if(data.records.length > 100){
-    data.records =
-      data.records.slice(-100);
-  }
-  if(
-    !data.best[mode] ||
-    ms < data.best[mode]
-  ){
-    data.best[mode] = ms;
-    showToast("🏆 NEW PERSONAL BEST!");
-  }
-  if(ms < 350){
-    combo++;
-  }else{
-    combo = 0;
-  }
-  arena.className = "result";
-  arenaLabel.textContent =
-    "REACTION";
-  mainText.textContent =
-    ms + " ms";
-  subText.textContent =
-    getComment(ms);
-  lastResult.textContent =
-    ms + " ms";
-  rankEl.textContent =
-    getRank(ms);
-  resultPanel.classList.add("show");
-  saveData();
-  updateStats();
-  playGood();
-  setTimeout(nextRound,1100);
-}
-/* =========================
-   NEXT ROUND
-========================= */
-function nextRound(){
-  if(round >= TOTAL_ROUNDS){
-    finishSession();
-    return;
-  }
-  state = "idle";
-  startBtn.disabled = false;
-  arena.className = "";
-  arenaLabel.textContent =
-    "NEXT";
-  mainText.textContent =
-    "READY?";
-  subText.textContent =
-    "STARTで次のラウンド";
-  updateProgress();
-}
-/* =========================
-   SESSION FINISH
-========================= */
-function finishSession(){
-  state = "idle";
-  startBtn.disabled = false;
-  arena.className = "result";
-  arenaLabel.textContent =
-    "SESSION COMPLETE";
-  if(sessionResults.length){
-    const avg =
-      Math.round(
-        sessionResults.reduce(
-          (a,b)=>a+b,0
-        ) / sessionResults.length
-      );
-    mainText.textContent =
-      avg + " ms";
-    subText.textContent =
-      "5ラウンド平均";
-    if(
-      avg < 250
-    ){
-      showToast("🔥 AMAZING SESSION!");
-    }else if(
-      avg < 350
-    ){
-      showToast("⚡ NICE SESSION!");
-    }
-  }
-  round = TOTAL_ROUNDS;
-}
-/* =========================
-   RANK
-========================= */
-function getRank(ms){
-  if(ms < 150)
-    return "S+ ⚡";
-  if(ms < 200)
-    return "S 🏆";
-  if(ms < 250)
-    return "A 🔥";
-  if(ms < 300)
-    return "B+ 🎯";
-  if(ms < 350)
-    return "B 👍";
-  if(ms < 450)
-    return "C 🙂";
-  return "D 🐢";
-}
-function getComment(ms){
-  if(ms < 150)
-    return "超高速。";
-  if(ms < 200)
-    return "めちゃ速い！";
-  if(ms < 250)
-    return "かなり速い！";
-  if(ms < 300)
-    return "いい反応！";
-  if(ms < 350)
-    return "まだ伸ばせる。";
-  if(ms < 450)
-    return "もう一回！";
-  return "集中！";
-}
-/* =========================
-   STATS
-========================= */
-function updateStats(){
-  const best =
-    data.best[mode];
-  bestEl.textContent =
-    best ? best : "---";
-  const records =
-    data.records.filter(
-      r => r.mode === mode
-    );
-  if(records.length){
-    const avg =
-      Math.round(
-        records.reduce(
-          (sum,r)=>sum+r.time,0
-        ) / records.length
-      );
-    averageEl.textContent =
-      avg;
-  }else{
-    averageEl.textContent =
-      "---";
-  }
-  comboEl.textContent =
-    combo;
-  updateBars();
-}
-/* =========================
-   GRAPH
-========================= */
-function updateBars(){
-  const records =
-    data.records
-      .filter(r=>r.mode===mode)
-      .slice(-12);
-  if(!records.length){
-    bars.innerHTML =
-      '<div class="empty">プレイすると記録が表示されます</div>';
-    return;
-  }
-  const max =
-    Math.max(
-      ...records.map(r=>r.time),
-      500
-    );
-  bars.innerHTML =
-    records.map(r=>{
-      const height =
-        Math.max(
-          8,
-          100-(r.time/max*75)
-        );
-      const isBest =
-        r.time === data.best[mode];
-      return `
-        <div class="barWrap">
-          <div
-            class="bar ${isBest?"best":""}"
-            style="height:${height}%"
-            title="${r.time} ms">
-          </div>
-        </div>
-      `;
-    }).join("");
-}
-/* =========================
-   PROGRESS
-========================= */
-function updateProgress(){
-  progress.innerHTML = "";
-  for(let i=1;i<=TOTAL_ROUNDS;i++){
-    const dot =
-      document.createElement("div");
-    dot.className = "dot";
-    if(i < round)
-      dot.classList.add("done");
-    if(i === round)
-      dot.classList.add("current");
-    progress.appendChild(dot);
-  }
-}
-/* =========================
-   AUDIO
-========================= */
-let audioContext;
-function getAudio(){
-  if(!audioContext){
-    audioContext =
-      new (
-        window.AudioContext ||
-        window.webkitAudioContext
-      )();
-  }
-  return audioContext;
-}
-function beep(freq,duration,type="sine"){
-  try{
-    const ctx =
-      getAudio();
-    const osc =
-      ctx.createOscillator();
-    const gain =
-      ctx.createGain();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
     osc.type = type;
-    osc.frequency.value =
-      freq;
-    gain.gain.setValueAtTime(
-      .0001,
-      ctx.currentTime
-    );
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(volume,audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(
-      .08,
-      ctx.currentTime+.01
+      .001,
+      audioCtx.currentTime + duration
     );
-    gain.gain.exponentialRampToValueAtTime(
-      .0001,
-      ctx.currentTime+duration
-    );
+
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(audioCtx.destination);
+
     osc.start();
-    osc.stop(
-      ctx.currentTime+duration
-    );
+    osc.stop(audioCtx.currentTime + duration);
   }catch(e){}
 }
-function playBeep(){
-  beep(700,.08,"square");
-}
-function playGood(){
-  beep(900,.07);
-  setTimeout(
-    ()=>beep(1200,.08),
-    70
-  );
-}
-function playBad(){
-  beep(180,.15,"sawtooth");
-}
-/* =========================
-   TOAST
-========================= */
-let toastTimer;
-function showToast(text){
-  toast.textContent =
-    text;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer =
-    setTimeout(
-      ()=>toast.classList.remove("show"),
-      1800
-    );
-}
-/* =========================
-   HELP
-========================= */
-function showHelp(){
-  alert(
-`REACTION RUSH
-1. STARTを押す
-2. 「DON'T TAP」の間は待つ
-3. 緑のGOが出た瞬間にタップ
-4. 5回で1 SESSION
-早く反応するほど高ランク！
-S+：150ms未満
-S：200ms未満
-A：250ms未満
-B+：300ms未満
-B：350ms未満
-C：450ms未満
-D：それ以上
-フライングするとコンボがリセットされます。`
-  );
-}
-/* =========================
-   RESET
-========================= */
-function resetData(){
-  if(
-    !confirm(
-      "すべての記録を削除しますか？"
-    )
-  ) return;
-  data = {
-    records:[],
-    best:{
-      classic:null,
-      speed:null,
-      extreme:null
-    }
-  };
-  round = 0;
-  combo = 0;
-  sessionResults = [];
-  saveData();
-  updateStats();
-  resultPanel.classList.remove("show");
-  arena.className = "";
-  arenaLabel.textContent =
-    "READY";
-  mainText.textContent =
-    "TAP START";
-  subText.textContent =
-    "緑になった瞬間にタップ";
-  startBtn.disabled = false;
-  updateProgress();
-  showToast("記録を削除しました");
-}
-/* =========================
-   KEYBOARD
-========================= */
-document.addEventListener(
-  "keydown",
-  e => {
-    if(e.code !== "Space") return;
-    e.preventDefault();
-    if(state === "idle"){
-      startRound();
-    }else{
-      handleTap(e);
-    }
+
+/* ---------- VIBRATION ---------- */
+
+function vibrate(pattern){
+  if(navigator.vibrate){
+    navigator.vibrate(pattern);
   }
-);
-/* =========================
-   INIT
-========================= */
-updateStats();
-updateProgress();
+}
+
+/* ---------- START ---------- */
+
+function startGame(){
+
+  startScreen.classList.add("hidden");
+  gameOver.classList.add("hidden");
+
+  arena.innerHTML = "";
+
+  score = 0;
+  combo = 0;
+  bestComboRun = 0;
+  lives = 3;
+  level = 0;
+  elapsed = 0;
+  fever = false;
+  feverTimer = 0;
+
+  running = true;
+
+  updateHUD();
+
+  message.innerHTML = "";
+
+  sound(500,.08);
+  sound(750,.08);
+
+  spawn();
+
+  clearInterval(spawnTimer);
+  clearInterval(lifeTimer);
+
+  spawnTimer = setInterval(()=>{
+    if(running) spawn();
+  }, getSpawnRate());
+
+  lifeTimer = setInterval(()=>{
+    if(!running) return;
+
+    elapsed++;
+
+    level = Math.floor(elapsed / 7);
+
+    if(fever){
+      feverTimer--;
+
+      if(feverTimer <= 0){
+        fever = false;
+        feverEl.classList.remove("active");
+      }
+    }
+
+    progressBar.style.width =
+      Math.min(100,(elapsed % 60) / 60 * 100) + "%";
+
+  },1000);
+
+  if(window.gameLoopRestart){
+    clearInterval(window.gameLoopRestart);
+  }
+
+  window.gameLoopRestart = setInterval(()=>{
+    if(!running) return;
+
+    clearInterval(spawnTimer);
+
+    spawnTimer = setInterval(()=>{
+      if(running) spawn();
+    },getSpawnRate());
+
+  },1000);
+}
+
+/* ---------- DIFFICULTY ---------- */
+
+function getSpawnRate(){
+
+  /*
+    1000ms → 250ms
+    徐々に狂っていく
+  */
+
+  return Math.max(
+    250,
+    850 - level * 65 - Math.floor(combo / 5) * 25
+  );
+}
+
+function getTargetSize(){
+
+  return Math.max(
+    48,
+    84 - level * 3 - Math.floor(combo / 8) * 3
+  );
+}
+
+/* ---------- SPAWN ---------- */
+
+function spawn(){
+
+  if(!running) return;
+
+  const target = document.createElement("div");
+
+  const size = getTargetSize();
+
+  target.style.width = size + "px";
+  target.style.height = size + "px";
+
+  /*
+    上部HUDを避ける
+  */
+
+  const rect = arena.getBoundingClientRect();
+
+  const x = 12 + Math.random() * (rect.width - 24);
+  const y = 50 + Math.random() * (rect.height - 90);
+
+  target.style.left = x + "px";
+  target.style.top = y + "px";
+
+  /*
+    基本はSAFE。
+    コンボが上がるとBOMB率上昇。
+  */
+
+  let type = "safe";
+
+  const bombChance =
+    Math.min(.38, .12 + level * .025);
+
+  const goldChance =
+    Math.min(.08, .025 + level * .004);
+
+  const r = Math.random();
+
+  if(r < goldChance){
+    type = "gold";
+  }else if(r < goldChance + bombChance){
+    type = "bomb";
+  }
+
+  target.className = "target " + type;
+
+  if(type === "safe"){
+    target.textContent = "✓";
+  }
+
+  if(type === "gold"){
+    target.textContent = "★";
+  }
+
+  if(type === "bomb"){
+    target.textContent = "☠";
+  }
+
+  arena.appendChild(target);
+
+  /*
+    タップされなければ消える。
+    SAFE/GOLDを見逃すとダメージ。
+    BOMBは見逃してOK。
+  */
+
+  const lifeTime = Math.max(
+    650,
+    1450 - level * 70 - combo * 8
+  );
+
+  const timeout = setTimeout(()=>{
+
+    if(!target.isConnected) return;
+
+    if(target.classList.contains("safe") ||
+       target.classList.contains("gold")){
+
+      missTarget(target);
+
+    }else{
+
+      target.remove();
+
+    }
+
+  },lifeTime);
+
+  target.addEventListener("pointerdown",(e)=>{
+
+    e.preventDefault();
+
+    clearTimeout(timeout);
+
+    handleTarget(target);
+
+  });
+}
+
+/* ---------- TARGET ---------- */
+
+function handleTarget(target){
+
+  if(!running || target.classList.contains("hit")) return;
+
+  target.classList.add("hit");
+
+  const isBomb = target.classList.contains("bomb");
+  const isGold = target.classList.contains("gold");
+
+  if(isBomb){
+
+    bombHit(target);
+
+  }else{
+
+    safeHit(target,isGold);
+
+  }
+
+  setTimeout(()=>{
+    if(target.isConnected) target.remove();
+  },200);
+}
+
+/* ---------- SAFE ---------- */
+
+function safeHit(target,isGold){
+
+  combo++;
+
+  bestComboRun = Math.max(
+    bestComboRun,
+    combo
+  );
+
+  if(combo > bestCombo){
+    bestCombo = combo;
+    localStorage.setItem(
+      "rod_combo",
+      bestCombo
+    );
+  }
+
+  let multiplier = getMultiplier();
+
+  let gain;
+
+  if(isGold){
+    gain = 100 * multiplier;
+    coins += 5;
+    showPop(target,"+" + gain + " 🪙");
+    sound(1100,.12,"triangle");
+    vibrate([20,30,20]);
+    activateFever();
+  }else{
+    gain = 10 * multiplier;
+    coins += 1;
+
+    showPop(
+      target,
+      "+" + gain
+    );
+
+    sound(
+      500 + Math.min(combo,20)*25,
+      .055,
+      "sine"
+    );
+
+    vibrate(10);
+  }
+
+  score += gain;
+
+  localStorage.setItem(
+    "rod_coins",
+    coins
+  );
+
+  coinHud.textContent = "🪙 " + coins;
+
+  /*
+    10コンボごとにFEVER
+  */
+
+  if(combo > 0 && combo % 10 === 0){
+    activateFever();
+  }
+
+  particles(
+    target,
+    isGold ? 18 : 9
+  );
+
+  updateHUD();
+}
+
+/* ---------- BOMB ---------- */
+
+function bombHit(target){
+
+  loseLife();
+
+  combo = 0;
+
+  showPop(
+    target,
+    "💥 BOMB!"
+  );
+
+  sound(90,.25,"sawtooth",.07);
+  vibrate([80,50,120]);
+
+  game.classList.remove("shake");
+
+  /*
+    force reflow
+  */
+  void game.offsetWidth;
+
+  game.classList.add("shake");
+
+  particles(target,15);
+
+  updateHUD();
+}
+
+/* ---------- MISS ---------- */
+
+function missTarget(target){
+
+  target.remove();
+
+  loseLife();
+
+  combo = 0;
+
+  showCenterMessage(
+    "MISS!",
+    "次は見逃すな"
+  );
+
+  sound(130,.16,"square",.04);
+  vibrate(70);
+
+  updateHUD();
+}
+
+/* ---------- LIFE ---------- */
+
+function loseLife(){
+
+  lives--;
+
+  if(lives <= 0){
+    endGame();
+  }
+}
+
+/* ---------- MULTIPLIER ---------- */
+
+function getMultiplier(){
+
+  if(combo >= 25) return 5;
+  if(combo >= 15) return 3;
+  if(combo >= 8) return 2;
+
+  return 1;
+}
+
+/* ---------- FEVER ---------- */
+
+function activateFever(){
+
+  fever = true;
+  feverTimer = 6;
+
+  feverEl.classList.add("active");
+
+  sound(900,.08,"triangle");
+  sound(1200,.12,"triangle");
+
+  showCenterMessage(
+    "🔥 FEVER!",
+    "スコア2倍"
+  );
+}
+
+/* ---------- POP ---------- */
+
+function showPop(target,text){
+
+  const p = document.createElement("div");
+
+  p.className = "pop";
+  p.textContent = text;
+
+  p.style.left = target.style.left;
+  p.style.top = target.style.top;
+
+  if(text.includes("BOMB")){
+    p.style.color = "#ff4059";
+  }else if(text.includes("🪙")){
+    p.style.color = "#ffe45c";
+  }else{
+    p.style.color = "#75ffab";
+  }
+
+  arena.appendChild(p);
+
+  setTimeout(()=>{
+    p.remove();
+  },700);
+}
+
+/* ---------- CENTER MESSAGE ---------- */
+
+let messageTimer;
+
+function showCenterMessage(big,small){
+
+  clearTimeout(messageTimer);
+
+  message.innerHTML = `
+    <div class="big">${big}</div>
+    <div class="small">${small}</div>
+  `;
+
+  messageTimer = setTimeout(()=>{
+    message.innerHTML = "";
+  },800);
+}
+
+/* ---------- PARTICLES ---------- */
+
+function particles(target,count){
+
+  const rect = arena.getBoundingClientRect();
+
+  const x = parseFloat(target.style.left);
+  const y = parseFloat(target.style.top);
+
+  for(let i=0;i<count;i++){
+
+    const p = document.createElement("div");
+
+    p.className = "particle";
+
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+
+    const angle = Math.random()*Math.PI*2;
+    const distance = 30 + Math.random()*70;
+
+    p.style.setProperty(
+      "--x",
+      Math.cos(angle)*distance + "px"
+    );
+
+    p.style.setProperty(
+      "--y",
+      Math.sin(angle)*distance + "px"
+    );
+
+    arena.appendChild(p);
+
+    setTimeout(()=>{
+      p.remove();
+    },550);
+  }
+}
+
+/* ---------- HUD ---------- */
+
+function updateHUD(){
+
+  scoreEl.textContent =
+    score.toLocaleString();
+
+  comboEl.textContent =
+    "x" + getMultiplier();
+
+  if(combo >= 8){
+    comboEl.style.color = "#ffe45c";
+  }else{
+    comboEl.style.color = "#ffffff";
+  }
+
+  livesEl.textContent =
+    "♥".repeat(Math.max(0,lives)) +
+    "♡".repeat(Math.max(0,3-lives));
+
+}
+
+/* ---------- GAME OVER ---------- */
+
+function endGame(){
+
+  running = false;
+
+  clearInterval(spawnTimer);
+  clearInterval(lifeTimer);
+
+  if(window.gameLoopRestart){
+    clearInterval(window.gameLoopRestart);
+  }
+
+  arena.innerHTML = "";
+
+  const oldBest = bestScore;
+
+  const isNewRecord =
+    score > oldBest;
+
+  if(isNewRecord){
+    bestScore = score;
+
+    localStorage.setItem(
+      "rod_best",
+      bestScore
+    );
+  }
+
+  finalScore.textContent =
+    score.toLocaleString();
+
+  bestScoreEl.textContent =
+    bestScore.toLocaleString();
+
+  bestComboEl.textContent =
+    bestComboRun;
+
+  newRecordEl.classList.toggle(
+    "hidden",
+    !isNewRecord
+  );
+
+  gameOver.classList.remove("hidden");
+
+  if(isNewRecord){
+    sound(700,.1,"triangle");
+    setTimeout(()=>{
+      sound(1000,.15,"triangle");
+    },100);
+  }else{
+    sound(100,.25,"sawtooth");
+  }
+}
+
+/* ---------- BUTTONS ---------- */
+
+document.getElementById("startBtn")
+  .addEventListener("click",startGame);
+
+document.getElementById("retryBtn")
+  .addEventListener("click",startGame);
+
+document.getElementById("homeBtn")
+  .addEventListener("click",()=>{
+
+    gameOver.classList.add("hidden");
+    startScreen.classList.remove("hidden");
+
+  });
+
+document.getElementById("resetBtn")
+  .addEventListener("click",()=>{
+
+    if(!confirm("スコア・コインなどを全部消します。")){
+      return;
+    }
+
+    localStorage.removeItem("rod_best");
+    localStorage.removeItem("rod_combo");
+    localStorage.removeItem("rod_coins");
+
+    bestScore = 0;
+    bestCombo = 0;
+    coins = 0;
+
+    coinHud.textContent = "🪙 0";
+
+  });
+
+/*
+  ゲーム中に背景をタップしても何もしない。
+  ターゲットだけが反応する。
+*/
+
+document.addEventListener("touchmove",(e)=>{
+  if(running){
+    e.preventDefault();
+  }
+},{passive:false});
+
 </script>
+
 </body>
 </html>
