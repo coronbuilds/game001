@@ -1,38 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>クリックゲーム</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反射神経ゲーム</title>
 <style>
-body{
-text-align:center;
-font-family:sans-serif;
-margin-top:50px;
+* {
+  box-sizing: border-box;
 }
-button{
-font-size:30px;
-padding:20px;
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #111;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+.container {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  padding: 20px;
+}
+h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+#message {
+  font-size: 20px;
+  margin: 20px 0;
+}
+#game {
+  width: 100%;
+  height: 350px;
+  border-radius: 20px;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  font-weight: bold;
+  touch-action: manipulation;
+}
+button {
+  margin-top: 20px;
+  padding: 15px 30px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+#result {
+  margin-top: 20px;
+  font-size: 24px;
 }
 </style>
 </head>
 <body>
-
-<h1>クリックゲーム</h1>
-
-<p>スコア: <span id="score">0</span></p>
-
-<button onclick="clickGame()">
-タップ！
+<div class="container">
+<h1>⚡ 反射神経ゲーム</h1>
+<div id="message">
+「スタート」を押してね
+</div>
+<div id="game">
+待機中
+</div>
+<button onclick="startGame()">
+スタート
 </button>
-
+<div id="result"></div>
+</div>
 <script>
-let score=0;
-
-function clickGame(){
-score++;
-document.getElementById("score").innerText=score;
+let startTime;
+let timer;
+let waiting = false;
+let playing = false;
+const game = document.getElementById("game");
+const message = document.getElementById("message");
+const result = document.getElementById("result");
+function startGame() {
+  if (playing) return;
+  playing = true;
+  waiting = true;
+  result.textContent = "";
+  message.textContent = "まだ押さないで！";
+  game.textContent = "待って…";
+  game.style.background = "#333";
+  const delay = Math.floor(Math.random() * 3000) + 2000;
+  timer = setTimeout(() => {
+    waiting = false;
+    startTime = performance.now();
+    game.textContent = "TAP!";
+    game.style.background = "#00aa55";
+    message.textContent = "今だ！";
+  }, delay);
 }
+game.addEventListener("click", () => {
+  if (!playing) return;
+  if (waiting) {
+    clearTimeout(timer);
+    message.textContent = "フライング！😈";
+    game.textContent = "もう一回！";
+    game.style.background = "#aa2222";
+    result.textContent = "反射神経：失格";
+    playing = false;
+    waiting = false;
+    return;
+  }
+  const reaction = Math.round(performance.now() - startTime);
+  message.textContent = "ナイス！";
+  game.textContent = reaction + " ms";
+  game.style.background = "#333";
+  result.textContent = "あなたの反応速度：" + reaction + " ms";
+  playing = false;
+});
 </script>
-
 </body>
 </html>
