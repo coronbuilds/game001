@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>反射神経ゲーム</title>
+
+<title>じゃんけんゲーム</title>
+
 <style>
+
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -17,106 +21,193 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  user-select: none;
 }
+
 .container {
   width: 100%;
   max-width: 500px;
+  padding: 25px;
   text-align: center;
-  padding: 20px;
 }
+
 h1 {
   font-size: 32px;
-  margin-bottom: 10px;
 }
-#message {
-  font-size: 20px;
-  margin: 20px 0;
+
+#computer {
+  font-size: 70px;
+  margin: 20px;
 }
-#game {
-  width: 100%;
-  height: 350px;
-  border-radius: 20px;
-  background: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+#result {
   font-size: 28px;
-  font-weight: bold;
-  touch-action: manipulation;
+  min-height: 40px;
+  margin: 20px;
 }
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
 button {
-  margin-top: 20px;
-  padding: 15px 30px;
-  font-size: 20px;
+  flex: 1;
+  padding: 20px 10px;
+  font-size: 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: 15px;
+  background: white;
   cursor: pointer;
 }
-#result {
-  margin-top: 20px;
-  font-size: 24px;
+
+button:active {
+  transform: scale(0.95);
 }
+
+.score {
+  margin-top: 30px;
+  font-size: 18px;
+}
+
+.reset {
+  margin-top: 20px;
+  font-size: 16px;
+  padding: 12px 20px;
+}
+
 </style>
 </head>
+
 <body>
+
 <div class="container">
-<h1>⚡ 反射神経ゲーム</h1>
-<div id="message">
-「スタート」を押してね
+
+<h1>✊ じゃんけん</h1>
+
+<div>CPU</div>
+
+<div id="computer">❓</div>
+
+<div id="result">
+あなたの手を選んで！
 </div>
-<div id="game">
-待機中
-</div>
-<button onclick="startGame()">
-スタート
+
+<div class="buttons">
+
+<button onclick="play('グー')">
+✊<br>グー
 </button>
-<div id="result"></div>
+
+<button onclick="play('チョキ')">
+✌️<br>チョキ
+</button>
+
+<button onclick="play('パー')">
+✋<br>パー
+</button>
+
 </div>
+
+<div class="score">
+
+勝ち：<span id="win">0</span><br>
+負け：<span id="lose">0</span><br>
+引き分け：<span id="draw">0</span>
+
+</div>
+
+<button class="reset" onclick="resetScore()">
+記録をリセット
+</button>
+
+</div>
+
 <script>
-let startTime;
-let timer;
-let waiting = false;
-let playing = false;
-const game = document.getElementById("game");
-const message = document.getElementById("message");
-const result = document.getElementById("result");
-function startGame() {
-  if (playing) return;
-  playing = true;
-  waiting = true;
-  result.textContent = "";
-  message.textContent = "まだ押さないで！";
-  game.textContent = "待って…";
-  game.style.background = "#333";
-  const delay = Math.floor(Math.random() * 3000) + 2000;
-  timer = setTimeout(() => {
-    waiting = false;
-    startTime = performance.now();
-    game.textContent = "TAP!";
-    game.style.background = "#00aa55";
-    message.textContent = "今だ！";
-  }, delay);
-}
-game.addEventListener("click", () => {
-  if (!playing) return;
-  if (waiting) {
-    clearTimeout(timer);
-    message.textContent = "フライング！😈";
-    game.textContent = "もう一回！";
-    game.style.background = "#aa2222";
-    result.textContent = "反射神経：失格";
-    playing = false;
-    waiting = false;
-    return;
+
+let win = Number(localStorage.getItem("win")) || 0;
+let lose = Number(localStorage.getItem("lose")) || 0;
+let draw = Number(localStorage.getItem("draw")) || 0;
+
+updateScore();
+
+function play(player) {
+
+  const hands = ["グー", "チョキ", "パー"];
+
+  const cpu = hands[Math.floor(Math.random() * 3)];
+
+  const emoji = {
+    "グー": "✊",
+    "チョキ": "✌️",
+    "パー": "✋"
+  };
+
+  document.getElementById("computer").textContent = emoji[cpu];
+
+  let result;
+
+  if (player === cpu) {
+
+    result = "引き分け！";
+    draw++;
+
+  } else if (
+
+    (player === "グー" && cpu === "チョキ") ||
+    (player === "チョキ" && cpu === "パー") ||
+    (player === "パー" && cpu === "グー")
+
+  ) {
+
+    result = "🎉 あなたの勝ち！";
+    win++;
+
+  } else {
+
+    result = "😈 あなたの負け！";
+    lose++;
+
   }
-  const reaction = Math.round(performance.now() - startTime);
-  message.textContent = "ナイス！";
-  game.textContent = reaction + " ms";
-  game.style.background = "#333";
-  result.textContent = "あなたの反応速度：" + reaction + " ms";
-  playing = false;
-});
+
+  document.getElementById("result").textContent = result;
+
+  saveScore();
+  updateScore();
+
+}
+
+function saveScore() {
+
+  localStorage.setItem("win", win);
+  localStorage.setItem("lose", lose);
+  localStorage.setItem("draw", draw);
+
+}
+
+function updateScore() {
+
+  document.getElementById("win").textContent = win;
+  document.getElementById("lose").textContent = lose;
+  document.getElementById("draw").textContent = draw;
+
+}
+
+function resetScore() {
+
+  win = 0;
+  lose = 0;
+  draw = 0;
+
+  saveScore();
+  updateScore();
+
+  document.getElementById("computer").textContent = "❓";
+  document.getElementById("result").textContent = "記録をリセットしました";
+
+}
+
 </script>
+
 </body>
 </html>
