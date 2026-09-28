@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>RED OR DEAD</title>
+<title>RED OR DEAD 2</title>
 
 <style>
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
   user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
@@ -17,12 +18,9 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#08090d;
-  color:white;
+  background:#050509;
+  color:#fff;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-
-body{
   touch-action:manipulation;
 }
 
@@ -34,50 +32,53 @@ body{
   margin:auto;
   overflow:hidden;
   background:
-    radial-gradient(circle at 50% 20%,#20243a 0%,#0d0f18 42%,#05060a 100%);
+    radial-gradient(circle at 50% 35%,#22263d 0%,#0b0d15 45%,#030306 100%);
+}
+
+#game.fever{
+  background:
+    radial-gradient(circle at 50% 35%,#443414 0%,#15100a 45%,#030306 100%);
 }
 
 #game.shake{
-  animation:shake .18s linear;
+  animation:shake .2s;
 }
 
 @keyframes shake{
-  0%{transform:translate(0)}
-  25%{transform:translate(8px,-5px)}
-  50%{transform:translate(-7px,5px)}
-  75%{transform:translate(5px,3px)}
-  100%{transform:translate(0)}
+  0%,100%{transform:translate(0)}
+  20%{transform:translate(-8px,4px)}
+  40%{transform:translate(7px,-5px)}
+  60%{transform:translate(-5px,-3px)}
+  80%{transform:translate(4px,4px)}
 }
 
 #hud{
   position:absolute;
+  z-index:20;
   top:0;
   left:0;
-  width:100%;
-  z-index:20;
-  padding:14px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
+  right:0;
+  padding:13px 14px;
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr;
+  align-items:center;
   pointer-events:none;
 }
 
 .stat{
   text-align:center;
-  min-width:65px;
 }
 
 .label{
-  font-size:10px;
-  color:#8f95a8;
-  letter-spacing:1px;
-  font-weight:800;
+  color:#858b9d;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.5px;
 }
 
 .value{
-  font-size:22px;
-  font-weight:900;
-  line-height:1.1;
+  font-size:20px;
+  font-weight:1000;
 }
 
 #score{
@@ -85,17 +86,17 @@ body{
 }
 
 #combo{
-  color:#ffe45c;
+  color:#ffe35a;
 }
 
 #lives{
-  color:#ff4d6d;
+  color:#ff4a67;
   letter-spacing:2px;
 }
 
 #arena{
   position:absolute;
-  inset:80px 0 0;
+  inset:75px 0 0;
   overflow:hidden;
 }
 
@@ -104,53 +105,70 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  transform:translate(-50%,-50%) scale(.1);
+  animation:spawn .13s ease-out forwards;
   border-radius:50%;
-  font-size:clamp(20px,7vw,36px);
-  font-weight:900;
-  transform:translate(-50%,-50%) scale(.2);
-  animation:appear .12s ease-out forwards;
-  box-shadow:0 0 25px rgba(255,255,255,.12);
+  font-weight:1000;
   z-index:5;
 }
 
-.target.safe{
-  background:
-    radial-gradient(circle at 35% 30%,#fff 0%,#8cffb0 7%,#20df72 45%,#087d42 100%);
-  border:3px solid #baffd0;
-  box-shadow:
-    0 0 20px rgba(32,223,114,.55),
-    inset 0 0 15px rgba(255,255,255,.4);
-}
-
-.target.bomb{
-  background:
-    radial-gradient(circle at 35% 30%,#ff9c9c 0%,#ff304d 12%,#9c0923 55%,#3d0610 100%);
-  border:3px solid #ff647a;
-  box-shadow:
-    0 0 25px rgba(255,35,65,.7),
-    inset 0 0 15px rgba(255,255,255,.2);
-}
-
-.target.gold{
-  background:
-    radial-gradient(circle at 35% 30%,#fff 0%,#fff59a 8%,#ffd21f 45%,#bd7100 100%);
-  border:3px solid #fff4a0;
-  box-shadow:
-    0 0 30px rgba(255,210,30,.85),
-    inset 0 0 15px rgba(255,255,255,.5);
-}
-
-.target.fake{
-  opacity:.85;
-  filter:saturate(.7);
-}
-
-@keyframes appear{
+@keyframes spawn{
   to{transform:translate(-50%,-50%) scale(1)}
 }
 
+.target:after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.08);
+}
+
+.safe{
+  background:
+    radial-gradient(circle at 32% 25%,#fff 0%,#8affb1 8%,#1fdf71 45%,#08783e 100%);
+  border:3px solid #baffd0;
+  box-shadow:0 0 25px rgba(30,230,110,.6);
+}
+
+.gold{
+  background:
+    radial-gradient(circle at 30% 25%,#fff 0%,#fff49c 8%,#ffd522 42%,#a96300 100%);
+  border:3px solid #fff5a8;
+  box-shadow:0 0 35px rgba(255,211,25,.85);
+  animation:
+    spawn .13s ease-out forwards,
+    goldPulse .55s infinite alternate;
+}
+
+@keyframes goldPulse{
+  from{box-shadow:0 0 20px rgba(255,210,20,.5)}
+  to{box-shadow:0 0 45px rgba(255,210,20,1)}
+}
+
+.bomb{
+  background:
+    radial-gradient(circle at 30% 25%,#ffabab 0%,#ff304e 12%,#940b24 55%,#33050d 100%);
+  border:3px solid #ff7185;
+  box-shadow:0 0 30px rgba(255,30,60,.8);
+}
+
+.mult{
+  background:
+    radial-gradient(circle at 30% 25%,#fff 0%,#dfb4ff 10%,#9d32ff 45%,#461080 100%);
+  border:3px solid #dfb0ff;
+  box-shadow:0 0 30px rgba(170,50,255,.75);
+}
+
+.chain{
+  background:
+    radial-gradient(circle at 30% 25%,#fff 0%,#b5eaff 8%,#28a9ff 45%,#07528c 100%);
+  border:3px solid #a8e8ff;
+  box-shadow:0 0 35px rgba(30,170,255,.8);
+}
+
 .target.hit{
-  animation:hit .18s ease-out forwards;
+  animation:hit .18s forwards!important;
 }
 
 @keyframes hit{
@@ -160,63 +178,73 @@ body{
   }
 }
 
-#message{
+#event{
   position:absolute;
+  z-index:22;
+  top:83px;
   left:50%;
-  top:42%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  z-index:15;
-  pointer-events:none;
-  width:90%;
-}
-
-#message .big{
-  font-size:clamp(34px,11vw,64px);
+  transform:translateX(-50%);
+  font-size:12px;
   font-weight:1000;
-  letter-spacing:2px;
-  text-shadow:0 5px 30px rgba(0,0,0,.7);
+  letter-spacing:1px;
+  color:#ffe45c;
+  opacity:0;
+  white-space:nowrap;
 }
 
-#message .small{
-  margin-top:8px;
-  color:#aeb4c8;
-  font-size:14px;
-  font-weight:700;
+#event.show{
+  animation:eventIn .9s forwards;
+}
+
+@keyframes eventIn{
+  0%{opacity:0;transform:translateX(-50%) scale(.7)}
+  20%{opacity:1;transform:translateX(-50%) scale(1.15)}
+  80%{opacity:1}
+  100%{opacity:0}
+}
+
+#meter{
+  position:absolute;
+  z-index:21;
+  left:14px;
+  right:14px;
+  top:67px;
+  height:4px;
+  background:#252838;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+#meterBar{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#43ff92,#ffe34f,#ff304e);
 }
 
 .pop{
   position:absolute;
+  z-index:40;
   pointer-events:none;
-  z-index:30;
+  font-size:23px;
   font-weight:1000;
-  font-size:25px;
-  animation:pop .65s ease-out forwards;
+  transform:translate(-50%,-50%);
+  animation:pop .65s forwards;
 }
 
 @keyframes pop{
-  0%{
-    transform:translate(-50%,-50%) scale(.7);
-    opacity:0;
-  }
-  20%{
-    transform:translate(-50%,-70%) scale(1.2);
-    opacity:1;
-  }
-  100%{
-    transform:translate(-50%,-150%) scale(1);
-    opacity:0;
-  }
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-75%) scale(1.15)}
+  100%{opacity:0;transform:translate(-50%,-160%) scale(1)}
 }
 
 .particle{
   position:absolute;
+  z-index:35;
   width:7px;
   height:7px;
   border-radius:50%;
   pointer-events:none;
-  z-index:25;
-  animation:particle .5s ease-out forwards;
+  animation:particle .55s forwards;
 }
 
 @keyframes particle{
@@ -226,20 +254,56 @@ body{
   }
 }
 
-#startScreen,
-#gameOver{
+#comboFlash{
+  position:absolute;
+  z-index:18;
+  left:50%;
+  top:38%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  text-align:center;
+  opacity:0;
+}
+
+#comboFlash .big{
+  font-size:clamp(40px,13vw,72px);
+  font-weight:1000;
+  font-style:italic;
+  text-shadow:0 5px 30px #000;
+}
+
+#comboFlash .small{
+  color:#ffe45c;
+  font-weight:1000;
+  letter-spacing:2px;
+}
+
+#coin{
+  position:absolute;
+  z-index:20;
+  right:12px;
+  bottom:10px;
+  font-size:12px;
+  font-weight:900;
+  color:#ffd94d;
+  pointer-events:none;
+}
+
+/* screens */
+
+.screen{
   position:absolute;
   inset:0;
-  z-index:50;
-  background:
-    radial-gradient(circle at 50% 30%,rgba(255,40,65,.18),transparent 35%),
-    rgba(4,5,9,.94);
+  z-index:60;
   display:flex;
   flex-direction:column;
-  align-items:center;
   justify-content:center;
-  padding:25px;
+  align-items:center;
   text-align:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,30,55,.2),transparent 36%),
+    rgba(3,4,8,.95);
 }
 
 .hidden{
@@ -247,148 +311,106 @@ body{
 }
 
 .logo{
-  font-size:clamp(42px,13vw,76px);
-  line-height:.9;
+  font-size:clamp(43px,14vw,78px);
+  line-height:.82;
   font-weight:1000;
-  letter-spacing:-3px;
+  letter-spacing:-4px;
 }
 
 .logo span{
   color:#ff304d;
 }
 
-.subtitle{
-  margin-top:14px;
-  color:#aeb4c8;
-  font-size:14px;
-  line-height:1.7;
+.tag{
+  margin-top:18px;
+  color:#a9afc0;
+  font-size:13px;
 }
 
-.howto{
-  margin-top:24px;
-  width:min(350px,90%);
-  padding:16px;
-  border:1px solid #292d3d;
-  background:#11131b;
-  border-radius:18px;
-  font-size:14px;
+.rule{
+  margin-top:22px;
+  width:min(350px,92%);
+  padding:15px;
+  background:#10131b;
+  border:1px solid #292d3c;
+  border-radius:17px;
+  font-size:13px;
   line-height:1.8;
 }
 
-.howto b{
-  color:#65ff9a;
-}
-
-.howto .danger{
-  color:#ff5268;
-}
-
-button{
-  border:0;
-  color:white;
-  font-weight:1000;
-  cursor:pointer;
-}
+.green{color:#69ff9d}
+.red{color:#ff4e68}
+.goldText{color:#ffe34f}
+.purple{color:#c874ff}
+.blue{color:#50c6ff}
 
 .mainBtn{
-  margin-top:24px;
-  width:min(330px,90%);
-  padding:17px 20px;
-  border-radius:17px;
+  margin-top:22px;
+  width:min(340px,92%);
+  padding:17px;
+  border:0;
+  border-radius:16px;
+  color:#fff;
+  background:linear-gradient(135deg,#ff304d,#b90026);
+  box-shadow:0 10px 35px rgba(255,30,60,.3);
   font-size:19px;
-  background:linear-gradient(135deg,#ff304d,#b90024);
-  box-shadow:0 8px 30px rgba(255,30,65,.28);
+  font-weight:1000;
 }
 
 .mainBtn:active{
   transform:scale(.96);
 }
 
-.secondary{
-  margin-top:12px;
-  background:#171a24;
-  border:1px solid #303547;
-  padding:12px 25px;
+.subBtn{
+  margin-top:10px;
+  padding:11px 22px;
+  border:1px solid #303444;
   border-radius:12px;
-  font-size:13px;
+  background:#151821;
+  color:#adb3c5;
+  font-weight:800;
 }
 
-#resultTitle{
-  color:#ff4059;
-  font-size:16px;
-  font-weight:900;
+#overTitle{
+  color:#ff415c;
+  font-size:15px;
   letter-spacing:2px;
+  font-weight:1000;
 }
 
 #finalScore{
-  margin-top:4px;
+  margin-top:3px;
   font-size:68px;
+  line-height:1;
   font-weight:1000;
 }
 
-.resultLine{
-  margin-top:4px;
-  color:#aeb4c8;
-  font-size:14px;
+.result{
+  margin-top:8px;
+  color:#aeb4c5;
+  font-size:13px;
+  line-height:1.8;
 }
 
-#newRecord{
-  margin-top:12px;
-  color:#ffe45c;
+#record{
+  margin-top:9px;
+  color:#ffe34f;
   font-weight:1000;
-  font-size:14px;
 }
 
-#progress{
-  position:absolute;
-  top:76px;
-  left:16px;
-  right:16px;
-  height:4px;
-  background:#252938;
-  border-radius:10px;
-  overflow:hidden;
-  z-index:21;
-}
-
-#progressBar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#40ff91,#ffe34e,#ff304d);
-  transition:width .2s;
-}
-
-#fever{
-  position:absolute;
-  top:88px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:20;
-  font-weight:1000;
+#mission{
+  margin-top:17px;
+  width:min(340px,92%);
+  padding:12px;
+  background:#10131b;
+  border-radius:13px;
+  border:1px solid #282d3c;
+  color:#aeb4c5;
   font-size:12px;
-  color:#ffe45c;
-  opacity:0;
-  transition:.2s;
 }
 
-#fever.active{
-  opacity:1;
-  animation:feverPulse .45s infinite alternate;
-}
-
-@keyframes feverPulse{
-  from{transform:translateX(-50%) scale(1)}
-  to{transform:translateX(-50%) scale(1.15)}
-}
-
-#coinHud{
-  position:absolute;
-  bottom:12px;
-  right:14px;
-  z-index:20;
-  font-size:12px;
-  color:#ffd84c;
-  font-weight:900;
+#mission b{
+  color:#fff;
 }
 </style>
 </head>
@@ -398,6 +420,7 @@ button{
 <div id="game">
 
   <div id="hud">
+
     <div class="stat">
       <div class="label">SCORE</div>
       <div class="value" id="score">0</div>
@@ -412,76 +435,82 @@ button{
       <div class="label">LIFE</div>
       <div class="value" id="lives">♥♥♥</div>
     </div>
+
   </div>
 
-  <div id="progress">
-    <div id="progressBar"></div>
+  <div id="meter">
+    <div id="meterBar"></div>
   </div>
 
-  <div id="fever">🔥 FEVER MODE 🔥</div>
+  <div id="event"></div>
 
   <div id="arena"></div>
 
-  <div id="message">
+  <div id="comboFlash">
     <div class="big"></div>
     <div class="small"></div>
   </div>
 
-  <div id="coinHud">🪙 0</div>
+  <div id="coin">🪙 0</div>
 
-  <!-- START -->
+  <!-- TITLE -->
 
-  <div id="startScreen">
+  <div id="start" class="screen">
 
-    <div class="logo">RED<br><span>OR DEAD</span></div>
-
-    <div class="subtitle">
-      一瞬の判断で、どこまで生き残れる？
+    <div class="logo">
+      RED<br><span>OR DEAD</span>
     </div>
 
-    <div class="howto">
-      🟢 <b>SAFE</b> → タップ<br>
-      🟡 <b>GOLD</b> → タップすると大量得点<br>
-      🔴 <span class="danger">BOMB</span> → 絶対にタップしない<br>
+    <div class="tag">
+      TAKE THE RISK. BREAK THE RECORD.
+    </div>
+
+    <div class="rule">
+      <span class="green">🟢 SAFE</span> → 押す<br>
+      <span class="goldText">🟡 GOLD</span> → 押す。超高得点<br>
+      <span class="purple">🟣 ×2</span> → 次の得点2倍<br>
+      <span class="blue">🔵 CHAIN</span> → ターゲット大量出現<br>
+      <span class="red">🔴 BOMB</span> → 絶対押さない<br>
       <br>
-      コンボを繋げるほどスピードアップ。
+      <b>コンボが上がるほど危険になる。</b>
     </div>
 
     <button class="mainBtn" id="startBtn">
-      GAME START
+      PLAY
     </button>
 
-    <button class="secondary" id="resetBtn">
-      データをリセット
+    <button class="subBtn" id="resetBtn">
+      データリセット
     </button>
 
   </div>
 
   <!-- GAME OVER -->
 
-  <div id="gameOver" class="hidden">
+  <div id="over" class="screen hidden">
 
-    <div id="resultTitle">GAME OVER</div>
+    <div id="overTitle">GAME OVER</div>
 
     <div id="finalScore">0</div>
 
-    <div class="resultLine">
-      BEST SCORE　<span id="bestScore">0</span>
+    <div class="result">
+      BEST SCORE　<b id="best">0</b><br>
+      MAX COMBO　<b id="maxCombo">0</b>
     </div>
 
-    <div class="resultLine">
-      BEST COMBO　<span id="bestCombo">0</span>
-    </div>
-
-    <div id="newRecord" class="hidden">
+    <div id="record" class="hidden">
       🏆 NEW RECORD
     </div>
 
-    <button class="mainBtn" id="retryBtn">
-      RETRY
+    <div id="mission">
+      今日のミッション：<b id="missionText"></b>
+    </div>
+
+    <button class="mainBtn" id="retry">
+      AGAIN
     </button>
 
-    <button class="secondary" id="homeBtn">
+    <button class="subBtn" id="titleBtn">
       TITLE
     </button>
 
@@ -490,8 +519,9 @@ button{
 </div>
 
 <script>
+
 /* =========================
-   RED OR DEAD
+   DATA
 ========================= */
 
 const arena = document.getElementById("arena");
@@ -500,550 +530,652 @@ const game = document.getElementById("game");
 const scoreEl = document.getElementById("score");
 const comboEl = document.getElementById("combo");
 const livesEl = document.getElementById("lives");
-const progressBar = document.getElementById("progressBar");
-const feverEl = document.getElementById("fever");
-const coinHud = document.getElementById("coinHud");
 
-const startScreen = document.getElementById("startScreen");
-const gameOver = document.getElementById("gameOver");
+const coinEl = document.getElementById("coin");
+const meterBar = document.getElementById("meterBar");
+const eventEl = document.getElementById("event");
+
+const comboFlash = document.getElementById("comboFlash");
+
+const startScreen = document.getElementById("start");
+const overScreen = document.getElementById("over");
 
 const finalScore = document.getElementById("finalScore");
-const bestScoreEl = document.getElementById("bestScore");
-const bestComboEl = document.getElementById("bestCombo");
-const newRecordEl = document.getElementById("newRecord");
-
-const message = document.getElementById("message");
+const bestEl = document.getElementById("best");
+const maxComboEl = document.getElementById("maxCombo");
+const recordEl = document.getElementById("record");
 
 let score = 0;
 let combo = 0;
-let bestComboRun = 0;
+let maxCombo = 0;
 let lives = 3;
-
-let running = false;
-let spawnTimer = null;
-let lifeTimer = null;
 
 let level = 0;
 let elapsed = 0;
+let multiplier = 1;
+
+let running = false;
+let spawnTimer = null;
+let clockTimer = null;
+
+let coins = Number(localStorage.getItem("rod2_coins") || 0);
+let bestScore = Number(localStorage.getItem("rod2_best") || 0);
+let bestCombo = Number(localStorage.getItem("rod2_combo") || 0);
+
 let fever = false;
-let feverTimer = 0;
+let feverTime = 0;
 
-let coins = Number(localStorage.getItem("rod_coins") || 0);
-let bestScore = Number(localStorage.getItem("rod_best") || 0);
-let bestCombo = Number(localStorage.getItem("rod_combo") || 0);
+coinEl.textContent = "🪙 " + coins;
 
-coinHud.textContent = "🪙 " + coins;
 
-/* ---------- SOUND ---------- */
+/* =========================
+   AUDIO
+========================= */
 
-let audioCtx = null;
+let audio = null;
 
-function sound(freq, duration=.08, type="sine", volume=.04){
+function beep(freq,duration=.07,type="sine",volume=.035){
+
   try{
-    if(!audioCtx){
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    if(!audio){
+      audio = new (window.AudioContext || window.webkitAudioContext)();
     }
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
 
     osc.type = type;
     osc.frequency.value = freq;
 
-    gain.gain.setValueAtTime(volume,audioCtx.currentTime);
+    gain.gain.setValueAtTime(volume,audio.currentTime);
+
     gain.gain.exponentialRampToValueAtTime(
       .001,
-      audioCtx.currentTime + duration
+      audio.currentTime + duration
     );
 
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(audio.destination);
 
     osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+    osc.stop(audio.currentTime + duration);
+
   }catch(e){}
+
 }
 
-/* ---------- VIBRATION ---------- */
 
-function vibrate(pattern){
-  if(navigator.vibrate){
-    navigator.vibrate(pattern);
-  }
-}
-
-/* ---------- START ---------- */
+/* =========================
+   START
+========================= */
 
 function startGame(){
 
   startScreen.classList.add("hidden");
-  gameOver.classList.add("hidden");
+  overScreen.classList.add("hidden");
 
   arena.innerHTML = "";
 
   score = 0;
   combo = 0;
-  bestComboRun = 0;
+  maxCombo = 0;
   lives = 3;
+
   level = 0;
   elapsed = 0;
+  multiplier = 1;
+
   fever = false;
-  feverTimer = 0;
+  feverTime = 0;
+
+  game.classList.remove("fever");
 
   running = true;
 
   updateHUD();
 
-  message.innerHTML = "";
-
-  sound(500,.08);
-  sound(750,.08);
-
   spawn();
 
   clearInterval(spawnTimer);
-  clearInterval(lifeTimer);
+  clearInterval(clockTimer);
 
   spawnTimer = setInterval(()=>{
     if(running) spawn();
-  }, getSpawnRate());
+  },spawnRate());
 
-  lifeTimer = setInterval(()=>{
-    if(!running) return;
+  clockTimer = setInterval(tick,1000);
 
-    elapsed++;
-
-    level = Math.floor(elapsed / 7);
-
-    if(fever){
-      feverTimer--;
-
-      if(feverTimer <= 0){
-        fever = false;
-        feverEl.classList.remove("active");
-      }
-    }
-
-    progressBar.style.width =
-      Math.min(100,(elapsed % 60) / 60 * 100) + "%";
-
-  },1000);
-
-  if(window.gameLoopRestart){
-    clearInterval(window.gameLoopRestart);
-  }
-
-  window.gameLoopRestart = setInterval(()=>{
-    if(!running) return;
-
-    clearInterval(spawnTimer);
-
-    spawnTimer = setInterval(()=>{
-      if(running) spawn();
-    },getSpawnRate());
-
-  },1000);
+  beep(500,.08);
+  setTimeout(()=>beep(800,.1),80);
 }
 
-/* ---------- DIFFICULTY ---------- */
 
-function getSpawnRate(){
+/* =========================
+   CLOCK
+========================= */
+
+function tick(){
+
+  if(!running)return;
+
+  elapsed++;
+
+  level = Math.floor(elapsed / 8);
+
+  if(fever){
+
+    feverTime--;
+
+    if(feverTime <= 0){
+      fever = false;
+      game.classList.remove("fever");
+    }
+
+  }
+
+  meterBar.style.width =
+    ((elapsed % 30) / 30 * 100) + "%";
 
   /*
-    1000ms → 250ms
-    徐々に狂っていく
+    タイマーを更新して速度を変える
+  */
+
+  clearInterval(spawnTimer);
+
+  spawnTimer = setInterval(()=>{
+    if(running) spawn();
+  },spawnRate());
+
+}
+
+
+/* =========================
+   DIFFICULTY
+========================= */
+
+function spawnRate(){
+
+  /*
+    最初 850ms
+    最終的に 230ms程度
   */
 
   return Math.max(
-    250,
-    850 - level * 65 - Math.floor(combo / 5) * 25
+    230,
+    850 -
+    level * 60 -
+    Math.floor(combo / 6) * 20
   );
+
 }
 
-function getTargetSize(){
+function targetSize(){
 
   return Math.max(
-    48,
-    84 - level * 3 - Math.floor(combo / 8) * 3
+    45,
+    82 -
+    level * 3 -
+    Math.floor(combo / 7) * 2
   );
+
 }
 
-/* ---------- SPAWN ---------- */
+
+/* =========================
+   SPAWN
+========================= */
 
 function spawn(){
 
-  if(!running) return;
+  if(!running)return;
 
-  const target = document.createElement("div");
+  const t = document.createElement("div");
 
-  const size = getTargetSize();
+  const size = targetSize();
 
-  target.style.width = size + "px";
-  target.style.height = size + "px";
-
-  /*
-    上部HUDを避ける
-  */
+  t.style.width = size + "px";
+  t.style.height = size + "px";
 
   const rect = arena.getBoundingClientRect();
 
-  const x = 12 + Math.random() * (rect.width - 24);
-  const y = 50 + Math.random() * (rect.height - 90);
+  t.style.left =
+    (10 + Math.random()*(rect.width-20)) + "px";
 
-  target.style.left = x + "px";
-  target.style.top = y + "px";
+  t.style.top =
+    (45 + Math.random()*(rect.height-80)) + "px";
+
 
   /*
-    基本はSAFE。
-    コンボが上がるとBOMB率上昇。
+    危険度
   */
 
-  let type = "safe";
+  const danger =
+    Math.min(
+      .48,
+      .10 +
+      level*.025 +
+      combo*.004
+    );
 
-  const bombChance =
-    Math.min(.38, .12 + level * .025);
+  const gold =
+    Math.min(.08,.025+level*.003);
 
-  const goldChance =
-    Math.min(.08, .025 + level * .004);
+  const special =
+    level >= 2 ? .07 : 0;
 
   const r = Math.random();
 
-  if(r < goldChance){
+  let type = "safe";
+
+  if(r < gold){
     type = "gold";
-  }else if(r < goldChance + bombChance){
+  }
+  else if(r < gold + special){
+
+    type =
+      Math.random() < .5
+      ? "mult"
+      : "chain";
+
+  }
+  else if(r < gold + special + danger){
     type = "bomb";
   }
 
-  target.className = "target " + type;
+  t.className = "target " + type;
 
-  if(type === "safe"){
-    target.textContent = "✓";
+  if(type==="safe"){
+    t.textContent = "✓";
   }
 
-  if(type === "gold"){
-    target.textContent = "★";
+  if(type==="gold"){
+    t.textContent = "★";
   }
 
-  if(type === "bomb"){
-    target.textContent = "☠";
+  if(type==="bomb"){
+    t.textContent = "☠";
   }
 
-  arena.appendChild(target);
+  if(type==="mult"){
+    t.textContent = "×2";
+  }
+
+  if(type==="chain"){
+    t.textContent = "⚡";
+  }
+
+  arena.appendChild(t);
+
 
   /*
-    タップされなければ消える。
-    SAFE/GOLDを見逃すとダメージ。
-    BOMBは見逃してOK。
+    画面に残る時間
   */
 
-  const lifeTime = Math.max(
-    650,
-    1450 - level * 70 - combo * 8
+  const lifetime = Math.max(
+    560,
+    1350 -
+    level*65 -
+    combo*7
   );
 
   const timeout = setTimeout(()=>{
 
-    if(!target.isConnected) return;
+    if(!t.isConnected)return;
 
-    if(target.classList.contains("safe") ||
-       target.classList.contains("gold")){
+    if(
+      t.classList.contains("safe") ||
+      t.classList.contains("gold") ||
+      t.classList.contains("mult") ||
+      t.classList.contains("chain")
+    ){
 
-      missTarget(target);
+      miss(t);
 
     }else{
 
-      target.remove();
+      t.remove();
 
     }
 
-  },lifeTime);
+  },lifetime);
 
-  target.addEventListener("pointerdown",(e)=>{
+
+  t.addEventListener("pointerdown",(e)=>{
 
     e.preventDefault();
 
     clearTimeout(timeout);
 
-    handleTarget(target);
+    if(!running)return;
+
+    hit(t);
 
   });
+
 }
 
-/* ---------- TARGET ---------- */
 
-function handleTarget(target){
+/* =========================
+   HIT
+========================= */
 
-  if(!running || target.classList.contains("hit")) return;
+function hit(t){
 
-  target.classList.add("hit");
+  if(t.classList.contains("hit"))return;
 
-  const isBomb = target.classList.contains("bomb");
-  const isGold = target.classList.contains("gold");
+  t.classList.add("hit");
 
-  if(isBomb){
+  if(t.classList.contains("bomb")){
 
-    bombHit(target);
+    bomb();
 
-  }else{
+  }
+  else if(t.classList.contains("gold")){
 
-    safeHit(target,isGold);
+    gold(t);
+
+  }
+  else if(t.classList.contains("mult")){
+
+    multi(t);
+
+  }
+  else if(t.classList.contains("chain")){
+
+    chain(t);
+
+  }
+  else{
+
+    safe(t);
 
   }
 
   setTimeout(()=>{
-    if(target.isConnected) target.remove();
+    if(t.isConnected)t.remove();
   },200);
+
 }
 
-/* ---------- SAFE ---------- */
 
-function safeHit(target,isGold){
+/* =========================
+   SAFE
+========================= */
+
+function safe(t){
 
   combo++;
+  maxCombo=Math.max(maxCombo,combo);
 
-  bestComboRun = Math.max(
-    bestComboRun,
-    combo
+  multiplier=getMultiplier();
+
+  const gain =
+    10 *
+    multiplier *
+    (fever ? 2 : 1);
+
+  score+=gain;
+
+  coins++;
+
+  save();
+
+  pop(t,"+"+gain);
+
+  particles(t,8);
+
+  beep(
+    420 + Math.min(combo,30)*18,
+    .05
   );
 
-  if(combo > bestCombo){
-    bestCombo = combo;
-    localStorage.setItem(
-      "rod_combo",
-      bestCombo
-    );
-  }
+  if(combo===5 || combo===10 || combo===20 || combo===30){
 
-  let multiplier = getMultiplier();
-
-  let gain;
-
-  if(isGold){
-    gain = 100 * multiplier;
-    coins += 5;
-    showPop(target,"+" + gain + " 🪙");
-    sound(1100,.12,"triangle");
-    vibrate([20,30,20]);
-    activateFever();
-  }else{
-    gain = 10 * multiplier;
-    coins += 1;
-
-    showPop(
-      target,
-      "+" + gain
+    flashCombo(
+      combo+" COMBO!",
+      "倍率 ×"+multiplier
     );
 
-    sound(
-      500 + Math.min(combo,20)*25,
-      .055,
-      "sine"
-    );
+    beep(900,.1,"triangle");
 
-    vibrate(10);
   }
-
-  score += gain;
-
-  localStorage.setItem(
-    "rod_coins",
-    coins
-  );
-
-  coinHud.textContent = "🪙 " + coins;
-
-  /*
-    10コンボごとにFEVER
-  */
-
-  if(combo > 0 && combo % 10 === 0){
-    activateFever();
-  }
-
-  particles(
-    target,
-    isGold ? 18 : 9
-  );
 
   updateHUD();
+
 }
 
-/* ---------- BOMB ---------- */
 
-function bombHit(target){
+/* =========================
+   GOLD
+========================= */
 
-  loseLife();
+function gold(t){
 
-  combo = 0;
+  combo++;
+  maxCombo=Math.max(maxCombo,combo);
 
-  showPop(
-    target,
-    "💥 BOMB!"
+  multiplier=getMultiplier();
+
+  const gain =
+    100 *
+    multiplier *
+    (fever ? 2 : 1);
+
+  score+=gain;
+
+  coins+=5;
+
+  save();
+
+  pop(t,"+"+gain+" 🪙");
+
+  particles(t,20);
+
+  activateFever();
+
+  beep(1100,.1,"triangle");
+  setTimeout(()=>beep(1450,.12,"triangle"),70);
+
+  updateHUD();
+
+}
+
+
+/* =========================
+   MULT
+========================= */
+
+function multi(t){
+
+  combo++;
+  maxCombo=Math.max(maxCombo,combo);
+
+  multiplier=Math.min(
+    12,
+    multiplier+2
   );
 
-  sound(90,.25,"sawtooth",.07);
-  vibrate([80,50,120]);
+  const gain =
+    20 *
+    multiplier *
+    (fever ? 2 : 1);
+
+  score+=gain;
+
+  coins+=2;
+
+  save();
+
+  pop(t,"×2  +"+gain);
+
+  particles(t,14);
+
+  flashCombo(
+    "POWER UP",
+    "倍率 ×"+multiplier
+  );
+
+  beep(700,.08,"square");
+  beep(1000,.1,"triangle");
+
+  updateHUD();
+
+}
+
+
+/* =========================
+   CHAIN
+========================= */
+
+function chain(t){
+
+  combo++;
+  maxCombo=Math.max(maxCombo,combo);
+
+  multiplier=getMultiplier();
+
+  const gain =
+    30 *
+    multiplier *
+    (fever ? 2 : 1);
+
+  score+=gain;
+  coins+=3;
+
+  save();
+
+  pop(t,"CHAIN!");
+
+  particles(t,20);
+
+  flashCombo(
+    "CHAIN!",
+    "ターゲット大量出現"
+  );
+
+  beep(600,.08,"triangle");
+  beep(900,.08,"triangle");
+
+  /*
+    一気に追加
+  */
+
+  for(let i=0;i<5;i++){
+
+    setTimeout(()=>{
+      if(running)spawn();
+    },i*90);
+
+  }
+
+  updateHUD();
+
+}
+
+
+/* =========================
+   BOMB
+========================= */
+
+function bomb(){
+
+  lives--;
+
+  combo=0;
+  multiplier=1;
 
   game.classList.remove("shake");
 
-  /*
-    force reflow
-  */
   void game.offsetWidth;
 
   game.classList.add("shake");
 
-  particles(target,15);
+  beep(80,.25,"sawtooth",.06);
 
-  updateHUD();
-}
+  if(navigator.vibrate){
+    navigator.vibrate([80,50,120]);
+  }
 
-/* ---------- MISS ---------- */
-
-function missTarget(target){
-
-  target.remove();
-
-  loseLife();
-
-  combo = 0;
-
-  showCenterMessage(
-    "MISS!",
-    "次は見逃すな"
+  flashCombo(
+    "💥 BOMB!",
+    "コンボ消滅"
   );
 
-  sound(130,.16,"square",.04);
-  vibrate(70);
-
   updateHUD();
+
+  if(lives<=0){
+    endGame();
+  }
+
 }
 
-/* ---------- LIFE ---------- */
 
-function loseLife(){
+/* =========================
+   MISS
+========================= */
+
+function miss(t){
+
+  t.remove();
 
   lives--;
 
-  if(lives <= 0){
+  combo=0;
+  multiplier=1;
+
+  popAt(
+    t,
+    "MISS!"
+  );
+
+  beep(120,.15,"square");
+
+  updateHUD();
+
+  if(lives<=0){
     endGame();
   }
+
 }
 
-/* ---------- MULTIPLIER ---------- */
+
+/* =========================
+   MULTIPLIER
+========================= */
 
 function getMultiplier(){
 
-  if(combo >= 25) return 5;
-  if(combo >= 15) return 3;
-  if(combo >= 8) return 2;
+  if(combo>=30)return 12;
+  if(combo>=20)return 8;
+  if(combo>=12)return 5;
+  if(combo>=7)return 3;
+  if(combo>=3)return 2;
 
   return 1;
+
 }
 
-/* ---------- FEVER ---------- */
+
+/* =========================
+   FEVER
+========================= */
 
 function activateFever(){
 
-  fever = true;
-  feverTimer = 6;
+  fever=true;
+  feverTime=7;
 
-  feverEl.classList.add("active");
+  game.classList.add("fever");
 
-  sound(900,.08,"triangle");
-  sound(1200,.12,"triangle");
+  showEvent("🔥 FEVER! SCORE ×2");
 
-  showCenterMessage(
-    "🔥 FEVER!",
-    "スコア2倍"
-  );
 }
 
-/* ---------- POP ---------- */
 
-function showPop(target,text){
-
-  const p = document.createElement("div");
-
-  p.className = "pop";
-  p.textContent = text;
-
-  p.style.left = target.style.left;
-  p.style.top = target.style.top;
-
-  if(text.includes("BOMB")){
-    p.style.color = "#ff4059";
-  }else if(text.includes("🪙")){
-    p.style.color = "#ffe45c";
-  }else{
-    p.style.color = "#75ffab";
-  }
-
-  arena.appendChild(p);
-
-  setTimeout(()=>{
-    p.remove();
-  },700);
-}
-
-/* ---------- CENTER MESSAGE ---------- */
-
-let messageTimer;
-
-function showCenterMessage(big,small){
-
-  clearTimeout(messageTimer);
-
-  message.innerHTML = `
-    <div class="big">${big}</div>
-    <div class="small">${small}</div>
-  `;
-
-  messageTimer = setTimeout(()=>{
-    message.innerHTML = "";
-  },800);
-}
-
-/* ---------- PARTICLES ---------- */
-
-function particles(target,count){
-
-  const rect = arena.getBoundingClientRect();
-
-  const x = parseFloat(target.style.left);
-  const y = parseFloat(target.style.top);
-
-  for(let i=0;i<count;i++){
-
-    const p = document.createElement("div");
-
-    p.className = "particle";
-
-    p.style.left = x + "px";
-    p.style.top = y + "px";
-
-    const angle = Math.random()*Math.PI*2;
-    const distance = 30 + Math.random()*70;
-
-    p.style.setProperty(
-      "--x",
-      Math.cos(angle)*distance + "px"
-    );
-
-    p.style.setProperty(
-      "--y",
-      Math.sin(angle)*distance + "px"
-    );
-
-    arena.appendChild(p);
-
-    setTimeout(()=>{
-      p.remove();
-    },550);
-  }
-}
-
-/* ---------- HUD ---------- */
+/* =========================
+   HUD
+========================= */
 
 function updateHUD(){
 
@@ -1051,120 +1183,347 @@ function updateHUD(){
     score.toLocaleString();
 
   comboEl.textContent =
-    "x" + getMultiplier();
+    "x"+multiplier;
 
-  if(combo >= 8){
-    comboEl.style.color = "#ffe45c";
-  }else{
-    comboEl.style.color = "#ffffff";
-  }
+  comboEl.style.color =
+    multiplier>=5
+    ? "#ffda45"
+    : "#fff";
 
   livesEl.textContent =
-    "♥".repeat(Math.max(0,lives)) +
+    "♥".repeat(Math.max(0,lives))+
     "♡".repeat(Math.max(0,3-lives));
+
+  coinEl.textContent =
+    "🪙 "+coins;
 
 }
 
-/* ---------- GAME OVER ---------- */
+
+/* =========================
+   POPUPS
+========================= */
+
+function pop(t,text){
+
+  const p=document.createElement("div");
+
+  p.className="pop";
+  p.textContent=text;
+
+  p.style.left=t.style.left;
+  p.style.top=t.style.top;
+
+  p.style.color =
+    text.includes("🪙")
+    ? "#ffe34f"
+    : "#78ffad";
+
+  arena.appendChild(p);
+
+  setTimeout(()=>p.remove(),700);
+
+}
+
+
+function popAt(t,text){
+
+  const p=document.createElement("div");
+
+  p.className="pop";
+  p.textContent=text;
+
+  p.style.left=t.style.left;
+  p.style.top=t.style.top;
+
+  p.style.color="#ff4d67";
+
+  arena.appendChild(p);
+
+  setTimeout(()=>p.remove(),700);
+
+}
+
+
+/* =========================
+   COMBO FLASH
+========================= */
+
+let flashTimer;
+
+function flashCombo(big,small){
+
+  clearTimeout(flashTimer);
+
+  comboFlash.innerHTML=`
+    <div class="big">${big}</div>
+    <div class="small">${small}</div>
+  `;
+
+  comboFlash.style.opacity="1";
+
+  comboFlash.animate(
+    [
+      {transform:"translate(-50%,-50%) scale(.5)",opacity:0},
+      {transform:"translate(-50%,-50%) scale(1.15)",opacity:1},
+      {transform:"translate(-50%,-50%) scale(1)",opacity:0}
+    ],
+    {
+      duration:700,
+      easing:"ease-out"
+    }
+  );
+
+  flashTimer=setTimeout(()=>{
+    comboFlash.style.opacity="0";
+  },700);
+
+}
+
+
+/* =========================
+   EVENT
+========================= */
+
+function showEvent(text){
+
+  eventEl.textContent=text;
+
+  eventEl.classList.remove("show");
+
+  void eventEl.offsetWidth;
+
+  eventEl.classList.add("show");
+
+}
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+function particles(t,count){
+
+  const x=parseFloat(t.style.left);
+  const y=parseFloat(t.style.top);
+
+  for(let i=0;i<count;i++){
+
+    const p=document.createElement("div");
+
+    p.className="particle";
+
+    p.style.left=x+"px";
+    p.style.top=y+"px";
+
+    const a=Math.random()*Math.PI*2;
+    const d=30+Math.random()*80;
+
+    p.style.setProperty(
+      "--x",
+      Math.cos(a)*d+"px"
+    );
+
+    p.style.setProperty(
+      "--y",
+      Math.sin(a)*d+"px"
+    );
+
+    arena.appendChild(p);
+
+    setTimeout(()=>p.remove(),600);
+
+  }
+
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+function save(){
+
+  localStorage.setItem(
+    "rod2_coins",
+    coins
+  );
+
+  if(score>bestScore){
+
+    bestScore=score;
+
+    localStorage.setItem(
+      "rod2_best",
+      bestScore
+    );
+
+  }
+
+  if(maxCombo>bestCombo){
+
+    bestCombo=maxCombo;
+
+    localStorage.setItem(
+      "rod2_combo",
+      bestCombo
+    );
+
+  }
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
 
 function endGame(){
 
-  running = false;
+  running=false;
 
   clearInterval(spawnTimer);
-  clearInterval(lifeTimer);
+  clearInterval(clockTimer);
 
-  if(window.gameLoopRestart){
-    clearInterval(window.gameLoopRestart);
-  }
+  arena.innerHTML="";
 
-  arena.innerHTML = "";
+  const isRecord =
+    score>Number(localStorage.getItem("rod2_best_before")||0);
 
-  const oldBest = bestScore;
+  const previousBest =
+    Number(localStorage.getItem("rod2_best_before")||0);
 
-  const isNewRecord =
-    score > oldBest;
+  if(score>bestScore){
 
-  if(isNewRecord){
-    bestScore = score;
+    bestScore=score;
 
     localStorage.setItem(
-      "rod_best",
+      "rod2_best",
       bestScore
     );
+
   }
+
+  if(maxCombo>bestCombo){
+
+    bestCombo=maxCombo;
+
+    localStorage.setItem(
+      "rod2_combo",
+      bestCombo
+    );
+
+  }
+
+  localStorage.setItem(
+    "rod2_best_before",
+    bestScore
+  );
 
   finalScore.textContent =
     score.toLocaleString();
 
-  bestScoreEl.textContent =
+  bestEl.textContent =
     bestScore.toLocaleString();
 
-  bestComboEl.textContent =
-    bestComboRun;
+  maxComboEl.textContent =
+    bestCombo;
 
-  newRecordEl.classList.toggle(
+  /*
+    初回プレイで0から記録更新扱いにならないようにする
+  */
+
+  recordEl.classList.toggle(
     "hidden",
-    !isNewRecord
+    !(score>previousBest && previousBest>0)
   );
 
-  gameOver.classList.remove("hidden");
+  document.getElementById("missionText").textContent =
+    getMissionText();
 
-  if(isNewRecord){
-    sound(700,.1,"triangle");
-    setTimeout(()=>{
-      sound(1000,.15,"triangle");
-    },100);
-  }else{
-    sound(100,.25,"sawtooth");
-  }
+  overScreen.classList.remove("hidden");
+
 }
 
-/* ---------- BUTTONS ---------- */
+
+/* =========================
+   MISSIONS
+========================= */
+
+function getMissionText(){
+
+  if(maxCombo>=20){
+    return "20 COMBO達成！";
+  }
+
+  if(score>=5000){
+    return "5,000点突破！";
+  }
+
+  if(score>=2000){
+    return "2,000点突破！";
+  }
+
+  if(coins>=20){
+    return "コイン20枚以上獲得！";
+  }
+
+  return "次は1,000点を目指せ！";
+
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
 
 document.getElementById("startBtn")
   .addEventListener("click",startGame);
 
-document.getElementById("retryBtn")
+document.getElementById("retry")
   .addEventListener("click",startGame);
 
-document.getElementById("homeBtn")
+document.getElementById("titleBtn")
   .addEventListener("click",()=>{
 
-    gameOver.classList.add("hidden");
+    overScreen.classList.add("hidden");
     startScreen.classList.remove("hidden");
 
   });
 
+
 document.getElementById("resetBtn")
   .addEventListener("click",()=>{
 
-    if(!confirm("スコア・コインなどを全部消します。")){
+    if(!confirm("スコア・コイン・記録を全部消します。")){
       return;
     }
 
-    localStorage.removeItem("rod_best");
-    localStorage.removeItem("rod_combo");
-    localStorage.removeItem("rod_coins");
+    localStorage.removeItem("rod2_coins");
+    localStorage.removeItem("rod2_best");
+    localStorage.removeItem("rod2_combo");
+    localStorage.removeItem("rod2_best_before");
 
-    bestScore = 0;
-    bestCombo = 0;
-    coins = 0;
+    coins=0;
+    bestScore=0;
+    bestCombo=0;
 
-    coinHud.textContent = "🪙 0";
+    coinEl.textContent="🪙 0";
 
   });
 
+
 /*
-  ゲーム中に背景をタップしても何もしない。
-  ターゲットだけが反応する。
+  iPhoneで長押し・スクロール等を防止
 */
 
-document.addEventListener("touchmove",(e)=>{
-  if(running){
-    e.preventDefault();
-  }
-},{passive:false});
+document.addEventListener(
+  "touchmove",
+  e=>{
+    if(running)e.preventDefault();
+  },
+  {passive:false}
+);
 
 </script>
 
