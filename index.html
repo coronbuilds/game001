@@ -853,18 +853,6 @@ button,input{
    SUPABASE SETTINGS
 ===================================================== */
 
-/*
-  ここだけ設定する。
-
-  SUPABASE_URL
-  → SupabaseのProject URL
-
-  SUPABASE_KEY
-  → Supabaseのanon public key
-
-  service_role keyは絶対に入れない。
-*/
-
 const SUPABASE_URL =
 "https://ybmzkqcpsqoddnajrnlj.supabase.co";
 
@@ -1151,12 +1139,6 @@ async function submitScore(){
   if(!playerName){
     return false;
   }
-
-  /*
-    毎プレイ大量に送信しない。
-
-    新しい自己ベストだけ送信する。
-  */
 
   const previousBest =
     Number(
@@ -1740,13 +1722,26 @@ function tick(){
    DIFFICULTY
 ===================================================== */
 
+/*
+  ★ HIGH SPEED UPDATE ★
+
+  以前:
+  850 - level*60 - combo加速
+
+  今回:
+  650 - level*45 - combo加速
+
+  序盤からテンポアップ。
+  コンボが伸びるほどさらに高速化。
+*/
+
 function spawnRate(){
 
   return Math.max(
-    230,
-    850 -
-    level * 60 -
-    Math.floor(combo / 6) * 20
+    150,
+    650 -
+    level * 45 -
+    Math.floor(combo / 4) * 25
   );
 
 }
@@ -1890,12 +1885,25 @@ function spawn(){
   arena.appendChild(t);
 
 
+  /*
+    ターゲットの存在時間も少し短縮。
+
+    以前:
+    1350 - level*65 - combo*7
+
+    今回:
+    1200 - level*55 - combo*8
+
+    「待てば取れる」より
+    「見えたらすぐ押す」ゲームにする。
+  */
+
   const lifetime =
     Math.max(
-      560,
-      1350 -
-      level * 65 -
-      combo * 7
+      480,
+      1200 -
+      level * 55 -
+      combo * 8
     );
 
   const timeout =
@@ -2836,7 +2844,7 @@ async function endGame(){
       "missionText"
     )
     .textContent =
-      getMissionText();
+    getMissionText();
 
   rankInfo.textContent =
     "ランキング送信中...";
@@ -2846,10 +2854,6 @@ async function endGame(){
   );
 
 
-  /*
-    オンラインランキングへ
-  */
-
   const submitted =
     await submitScore();
 
@@ -2857,10 +2861,6 @@ async function endGame(){
 
     rankInfo.textContent =
       "🌎 NEW SCORE SENT!";
-
-    /*
-      少し待ってから順位取得
-    */
 
     setTimeout(
       findMyRank,
