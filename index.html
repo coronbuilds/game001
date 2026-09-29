@@ -24,6 +24,10 @@ html,body{
   touch-action:manipulation;
 }
 
+button,input{
+  font-family:inherit;
+}
+
 #game{
   position:relative;
   width:100%;
@@ -110,10 +114,13 @@ html,body{
   border-radius:50%;
   font-weight:1000;
   z-index:5;
+  touch-action:none;
 }
 
 @keyframes spawn{
-  to{transform:translate(-50%,-50%) scale(1)}
+  to{
+    transform:translate(-50%,-50%) scale(1)
+  }
 }
 
 .target:after{
@@ -142,8 +149,12 @@ html,body{
 }
 
 @keyframes goldPulse{
-  from{box-shadow:0 0 20px rgba(255,210,20,.5)}
-  to{box-shadow:0 0 45px rgba(255,210,20,1)}
+  from{
+    box-shadow:0 0 20px rgba(255,210,20,.5)
+  }
+  to{
+    box-shadow:0 0 45px rgba(255,210,20,1)
+  }
 }
 
 .bomb{
@@ -197,10 +208,19 @@ html,body{
 }
 
 @keyframes eventIn{
-  0%{opacity:0;transform:translateX(-50%) scale(.7)}
-  20%{opacity:1;transform:translateX(-50%) scale(1.15)}
+  0%{
+    opacity:0;
+    transform:translateX(-50%) scale(.7)
+  }
+  20%{
+    opacity:1;
+    transform:translateX(-50%) scale(1.15)
+  }
   80%{opacity:1}
-  100%{opacity:0}
+  100%{
+    opacity:0;
+    transform:translateX(-50%) scale(1)
+  }
 }
 
 #meter{
@@ -232,9 +252,18 @@ html,body{
 }
 
 @keyframes pop{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
-  20%{opacity:1;transform:translate(-50%,-75%) scale(1.15)}
-  100%{opacity:0;transform:translate(-50%,-160%) scale(1)}
+  0%{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.6)
+  }
+  20%{
+    opacity:1;
+    transform:translate(-50%,-75%) scale(1.15)
+  }
+  100%{
+    opacity:0;
+    transform:translate(-50%,-160%) scale(1)
+  }
 }
 
 .particle{
@@ -289,7 +318,9 @@ html,body{
   pointer-events:none;
 }
 
-/* screens */
+/* =========================
+   SCREENS
+========================= */
 
 .screen{
   position:absolute;
@@ -325,6 +356,13 @@ html,body{
   margin-top:18px;
   color:#a9afc0;
   font-size:13px;
+}
+
+.playerDisplay{
+  margin-top:10px;
+  color:#ffe34f;
+  font-size:14px;
+  font-weight:1000;
 }
 
 .rule{
@@ -371,6 +409,16 @@ html,body{
   font-weight:800;
 }
 
+.smallBtn{
+  padding:9px 15px;
+  border:1px solid #303444;
+  border-radius:10px;
+  background:#151821;
+  color:#adb3c5;
+  font-weight:800;
+  margin:4px;
+}
+
 #overTitle{
   color:#ff415c;
   font-size:15px;
@@ -412,12 +460,186 @@ html,body{
 #mission b{
   color:#fff;
 }
+
+.rankInfo{
+  margin-top:9px;
+  color:#69ff9d;
+  font-weight:1000;
+  min-height:20px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:25px;
+  background:rgba(0,0,0,.82);
+}
+
+.modalBox{
+  width:min(400px,100%);
+  background:#11141d;
+  border:1px solid #333849;
+  border-radius:22px;
+  padding:24px;
+  text-align:center;
+  box-shadow:0 20px 70px rgba(0,0,0,.6);
+}
+
+.modalTitle{
+  font-size:26px;
+  font-weight:1000;
+}
+
+.modalSub{
+  margin-top:8px;
+  color:#9299ad;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.nameInput{
+  width:100%;
+  margin-top:18px;
+  padding:15px;
+  border-radius:13px;
+  border:1px solid #34394b;
+  background:#080a10;
+  color:#fff;
+  text-align:center;
+  font-size:20px;
+  font-weight:900;
+  outline:none;
+}
+
+.nameInput:focus{
+  border-color:#ff405a;
+}
+
+.error{
+  color:#ff526c;
+  font-size:12px;
+  min-height:18px;
+  margin-top:7px;
+}
+
+/* =========================
+   RANKING
+========================= */
+
+#rankingScreen{
+  justify-content:flex-start;
+  padding-top:45px;
+  overflow:auto;
+}
+
+.rankingTitle{
+  font-size:32px;
+  font-weight:1000;
+}
+
+.rankingSub{
+  margin-top:4px;
+  color:#858b9d;
+  font-size:11px;
+}
+
+.rankingList{
+  width:min(430px,100%);
+  margin-top:18px;
+}
+
+.rankRow{
+  display:grid;
+  grid-template-columns:48px 1fr 90px;
+  align-items:center;
+  gap:8px;
+  padding:11px 12px;
+  margin-bottom:6px;
+  background:#10131b;
+  border:1px solid #272c3b;
+  border-radius:12px;
+  text-align:left;
+}
+
+.rankRow.me{
+  border-color:#ffe34f;
+  background:#211e0d;
+}
+
+.rankNumber{
+  font-size:17px;
+  font-weight:1000;
+  text-align:center;
+}
+
+.rankName{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:900;
+}
+
+.rankCombo{
+  color:#858b9d;
+  font-size:10px;
+}
+
+.rankScore{
+  text-align:right;
+  color:#ffe34f;
+  font-weight:1000;
+}
+
+.loading{
+  color:#8d94a8;
+  padding:25px;
+}
+
+.noRanking{
+  color:#8d94a8;
+  padding:25px;
+  line-height:1.7;
+}
+
+.status{
+  margin-top:8px;
+  min-height:18px;
+  color:#858b9d;
+  font-size:11px;
+}
+
+@media(max-height:700px){
+  .rule{
+    margin-top:12px;
+    padding:10px;
+    font-size:11px;
+  }
+
+  .mainBtn{
+    margin-top:13px;
+    padding:13px;
+  }
+
+  .logo{
+    font-size:48px;
+  }
+}
 </style>
 </head>
 
 <body>
 
 <div id="game">
+
+  <!-- HUD -->
 
   <div id="hud">
 
@@ -453,6 +675,7 @@ html,body{
 
   <div id="coin">🪙 0</div>
 
+
   <!-- TITLE -->
 
   <div id="start" class="screen">
@@ -463,6 +686,11 @@ html,body{
 
     <div class="tag">
       TAKE THE RISK. BREAK THE RECORD.
+    </div>
+
+    <div
+      id="playerDisplay"
+      class="playerDisplay">
     </div>
 
     <div class="rule">
@@ -479,35 +707,59 @@ html,body{
       PLAY
     </button>
 
+    <button class="subBtn" id="rankingBtn">
+      🏆 RANKING
+    </button>
+
+    <button class="smallBtn" id="changeNameBtn">
+      ✏️ 名前変更
+    </button>
+
     <button class="subBtn" id="resetBtn">
       データリセット
     </button>
 
   </div>
 
+
   <!-- GAME OVER -->
 
   <div id="over" class="screen hidden">
 
-    <div id="overTitle">GAME OVER</div>
+    <div id="overTitle">
+      GAME OVER
+    </div>
 
-    <div id="finalScore">0</div>
+    <div id="finalScore">
+      0
+    </div>
 
     <div class="result">
-      BEST SCORE　<b id="best">0</b><br>
-      MAX COMBO　<b id="maxCombo">0</b>
+      BEST SCORE　
+      <b id="best">0</b>
+      <br>
+      MAX COMBO　
+      <b id="maxCombo">0</b>
     </div>
 
     <div id="record" class="hidden">
       🏆 NEW RECORD
     </div>
 
+    <div id="rankInfo" class="rankInfo">
+    </div>
+
     <div id="mission">
-      今日のミッション：<b id="missionText"></b>
+      今日のミッション：
+      <b id="missionText"></b>
     </div>
 
     <button class="mainBtn" id="retry">
       AGAIN
+    </button>
+
+    <button class="subBtn" id="overRankingBtn">
+      🏆 RANKING
     </button>
 
     <button class="subBtn" id="titleBtn">
@@ -516,34 +768,187 @@ html,body{
 
   </div>
 
+
+  <!-- RANKING -->
+
+  <div id="rankingScreen" class="screen hidden">
+
+    <div class="rankingTitle">
+      🏆 RANKING
+    </div>
+
+    <div class="rankingSub">
+      ALL TIME · TOP 20
+    </div>
+
+    <div id="rankingList" class="rankingList">
+      <div class="loading">
+        Loading...
+      </div>
+    </div>
+
+    <div id="rankingStatus" class="status"></div>
+
+    <div>
+      <button
+        class="smallBtn"
+        id="refreshRankingBtn">
+        🔄 更新
+      </button>
+
+      <button
+        class="smallBtn"
+        id="closeRankingBtn">
+        閉じる
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- NAME MODAL -->
+
+  <div id="nameModal" class="modal hidden">
+
+    <div class="modalBox">
+
+      <div class="modalTitle">
+        YOUR NAME
+      </div>
+
+      <div class="modalSub">
+        ランキングに表示する名前を入力
+        <br>
+        1〜12文字
+      </div>
+
+      <input
+        id="nameInput"
+        class="nameInput"
+        maxlength="12"
+        autocomplete="off"
+        placeholder="PLAYER">
+
+      <div
+        id="nameError"
+        class="error">
+      </div>
+
+      <button
+        class="mainBtn"
+        id="saveNameBtn">
+        決定
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
+
 
 <script>
 
-/* =========================
-   DATA
-========================= */
+/* =====================================================
+   SUPABASE SETTINGS
+===================================================== */
 
-const arena = document.getElementById("arena");
-const game = document.getElementById("game");
+/*
+  ここだけ設定する。
 
-const scoreEl = document.getElementById("score");
-const comboEl = document.getElementById("combo");
-const livesEl = document.getElementById("lives");
+  SUPABASE_URL
+  → SupabaseのProject URL
 
-const coinEl = document.getElementById("coin");
-const meterBar = document.getElementById("meterBar");
-const eventEl = document.getElementById("event");
+  SUPABASE_KEY
+  → Supabaseのanon public key
 
-const comboFlash = document.getElementById("comboFlash");
+  service_role keyは絶対に入れない。
+*/
 
-const startScreen = document.getElementById("start");
-const overScreen = document.getElementById("over");
+const SUPABASE_URL =
+"https://ybmzkqcpsqoddnajrnlj.supabase.co";
 
-const finalScore = document.getElementById("finalScore");
-const bestEl = document.getElementById("best");
-const maxComboEl = document.getElementById("maxCombo");
-const recordEl = document.getElementById("record");
+const SUPABASE_KEY =
+"ここにSupabaseのanon public keyを貼る";
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const arena =
+  document.getElementById("arena");
+
+const game =
+  document.getElementById("game");
+
+const scoreEl =
+  document.getElementById("score");
+
+const comboEl =
+  document.getElementById("combo");
+
+const livesEl =
+  document.getElementById("lives");
+
+const coinEl =
+  document.getElementById("coin");
+
+const meterBar =
+  document.getElementById("meterBar");
+
+const eventEl =
+  document.getElementById("event");
+
+const comboFlash =
+  document.getElementById("comboFlash");
+
+const startScreen =
+  document.getElementById("start");
+
+const overScreen =
+  document.getElementById("over");
+
+const rankingScreen =
+  document.getElementById("rankingScreen");
+
+const nameModal =
+  document.getElementById("nameModal");
+
+const nameInput =
+  document.getElementById("nameInput");
+
+const nameError =
+  document.getElementById("nameError");
+
+const playerDisplay =
+  document.getElementById("playerDisplay");
+
+const finalScore =
+  document.getElementById("finalScore");
+
+const bestEl =
+  document.getElementById("best");
+
+const maxComboEl =
+  document.getElementById("maxCombo");
+
+const recordEl =
+  document.getElementById("record");
+
+const rankInfo =
+  document.getElementById("rankInfo");
+
+const rankingList =
+  document.getElementById("rankingList");
+
+const rankingStatus =
+  document.getElementById("rankingStatus");
+
+
+/* =====================================================
+   GAME DATA
+===================================================== */
 
 let score = 0;
 let combo = 0;
@@ -555,65 +960,665 @@ let elapsed = 0;
 let multiplier = 1;
 
 let running = false;
+
 let spawnTimer = null;
 let clockTimer = null;
 
-let coins = Number(localStorage.getItem("rod2_coins") || 0);
-let bestScore = Number(localStorage.getItem("rod2_best") || 0);
-let bestCombo = Number(localStorage.getItem("rod2_combo") || 0);
+let coins =
+  Number(
+    localStorage.getItem("rod2_coins") || 0
+  );
+
+let bestScore =
+  Number(
+    localStorage.getItem("rod2_best") || 0
+  );
+
+let bestCombo =
+  Number(
+    localStorage.getItem("rod2_combo") || 0
+  );
+
+let playerName =
+  localStorage.getItem("rod2_player") || "";
 
 let fever = false;
 let feverTime = 0;
 
-coinEl.textContent = "🪙 " + coins;
+
+/* =====================================================
+   NAME
+===================================================== */
+
+function updatePlayerDisplay(){
+
+  playerDisplay.textContent =
+    "PLAYER : " +
+    playerName;
+
+}
 
 
-/* =========================
+function openNameModal(){
+
+  nameError.textContent = "";
+
+  nameInput.value =
+    playerName || "";
+
+  nameModal.classList.remove(
+    "hidden"
+  );
+
+  setTimeout(()=>{
+    nameInput.focus();
+  },100);
+
+}
+
+
+function closeNameModal(){
+
+  nameModal.classList.add(
+    "hidden"
+  );
+
+}
+
+
+function savePlayerName(){
+
+  const name =
+    nameInput.value.trim();
+
+  if(name.length < 1){
+
+    nameError.textContent =
+      "名前を入力してください";
+
+    return;
+
+  }
+
+  if(name.length > 12){
+
+    nameError.textContent =
+      "12文字以内にしてください";
+
+    return;
+
+  }
+
+  playerName = name;
+
+  localStorage.setItem(
+    "rod2_player",
+    playerName
+  );
+
+  updatePlayerDisplay();
+
+  closeNameModal();
+
+}
+
+
+/* =====================================================
+   SUPABASE API
+===================================================== */
+
+function supabaseReady(){
+
+  return (
+    SUPABASE_URL &&
+    SUPABASE_KEY &&
+    !SUPABASE_KEY.includes(
+      "ここにSupabase"
+    )
+  );
+
+}
+
+
+async function supabaseRequest(
+  path,
+  options={}
+){
+
+  if(!supabaseReady()){
+
+    throw new Error(
+      "Supabase is not configured."
+    );
+
+  }
+
+  const headers = {
+
+    apikey:
+      SUPABASE_KEY,
+
+    Authorization:
+      "Bearer " +
+      SUPABASE_KEY,
+
+    "Content-Type":
+      "application/json",
+
+    ...(options.headers || {})
+
+  };
+
+  const response =
+    await fetch(
+      SUPABASE_URL +
+      "/rest/v1/" +
+      path,
+      {
+        ...options,
+        headers
+      }
+    );
+
+  if(!response.ok){
+
+    const text =
+      await response.text();
+
+    throw new Error(
+      response.status +
+      " " +
+      text
+    );
+
+  }
+
+  return response;
+
+}
+
+
+/* =====================================================
+   SAVE SCORE ONLINE
+===================================================== */
+
+async function submitScore(){
+
+  if(!supabaseReady()){
+    return false;
+  }
+
+  if(!playerName){
+    return false;
+  }
+
+  /*
+    毎プレイ大量に送信しない。
+
+    新しい自己ベストだけ送信する。
+  */
+
+  const previousBest =
+    Number(
+      localStorage.getItem(
+        "rod2_online_submitted_best"
+      ) || 0
+    );
+
+  if(score <= previousBest){
+
+    return false;
+
+  }
+
+  try{
+
+    await supabaseRequest(
+      "scores",
+      {
+        method:"POST",
+
+        headers:{
+          Prefer:"return=minimal"
+        },
+
+        body:JSON.stringify({
+
+          player_name:
+            playerName,
+
+          score:
+            Math.floor(score),
+
+          combo:
+            Math.floor(maxCombo)
+
+        })
+
+      }
+    );
+
+    localStorage.setItem(
+      "rod2_online_submitted_best",
+      String(score)
+    );
+
+    return true;
+
+  }catch(error){
+
+    console.log(
+      "Ranking submit error:",
+      error
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =====================================================
+   LOAD RANKING
+===================================================== */
+
+async function loadRanking(){
+
+  rankingList.innerHTML =
+    `<div class="loading">
+      Loading...
+    </div>`;
+
+  rankingStatus.textContent =
+    "";
+
+  if(!supabaseReady()){
+
+    rankingList.innerHTML =
+      `<div class="noRanking">
+        Supabaseがまだ設定されていません。
+        <br><br>
+        index.html の
+        <br>
+        SUPABASE_KEY
+        <br>
+        を設定してください。
+      </div>`;
+
+    return;
+
+  }
+
+  try{
+
+    const response =
+      await supabaseRequest(
+        "scores" +
+        "?select=player_name,score,combo" +
+        "&order=score.desc" +
+        "&limit=20",
+        {
+          method:"GET"
+        }
+      );
+
+    const rows =
+      await response.json();
+
+    renderRanking(rows);
+
+  }catch(error){
+
+    console.log(
+      "Ranking load error:",
+      error
+    );
+
+    rankingList.innerHTML =
+      `<div class="noRanking">
+        ランキングを取得できませんでした。
+        <br><br>
+        Supabaseの設定を確認してください。
+      </div>`;
+
+    rankingStatus.textContent =
+      "通信エラー";
+
+  }
+
+}
+
+
+/* =====================================================
+   RENDER RANKING
+===================================================== */
+
+function renderRanking(rows){
+
+  rankingList.innerHTML = "";
+
+  if(!rows || rows.length === 0){
+
+    rankingList.innerHTML =
+      `<div class="noRanking">
+        まだランキングデータがありません。
+        <br>
+        最初の記録を作ろう！
+      </div>`;
+
+    return;
+
+  }
+
+  rows.forEach(
+    (row,index)=>{
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "rankRow";
+
+      if(
+        row.player_name ===
+        playerName
+      ){
+
+        div.classList.add("me");
+
+      }
+
+      const number =
+        document.createElement(
+          "div"
+        );
+
+      number.className =
+        "rankNumber";
+
+      if(index === 0){
+        number.textContent = "🥇";
+      }
+      else if(index === 1){
+        number.textContent = "🥈";
+      }
+      else if(index === 2){
+        number.textContent = "🥉";
+      }
+      else{
+        number.textContent =
+          "#" + (index + 1);
+      }
+
+      const nameBox =
+        document.createElement(
+          "div"
+        );
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+      name.className =
+        "rankName";
+
+      name.textContent =
+        row.player_name;
+
+      const combo =
+        document.createElement(
+          "div"
+        );
+
+      combo.className =
+        "rankCombo";
+
+      combo.textContent =
+        "MAX COMBO " +
+        Number(row.combo || 0);
+
+      nameBox.appendChild(name);
+      nameBox.appendChild(combo);
+
+      const scoreBox =
+        document.createElement(
+          "div"
+        );
+
+      scoreBox.className =
+        "rankScore";
+
+      scoreBox.textContent =
+        Number(
+          row.score || 0
+        ).toLocaleString();
+
+      div.appendChild(number);
+      div.appendChild(nameBox);
+      div.appendChild(scoreBox);
+
+      rankingList.appendChild(div);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   FIND MY RANK
+===================================================== */
+
+async function findMyRank(){
+
+  if(!supabaseReady()){
+    return;
+  }
+
+  if(!playerName){
+    return;
+  }
+
+  try{
+
+    const response =
+      await supabaseRequest(
+        "scores" +
+        "?select=player_name,score" +
+        "&order=score.desc" +
+        "&limit=100",
+        {
+          method:"GET"
+        }
+      );
+
+    const rows =
+      await response.json();
+
+    let found =
+      -1;
+
+    for(
+      let i=0;
+      i<rows.length;
+      i++
+    ){
+
+      if(
+        rows[i].player_name ===
+        playerName &&
+        Number(rows[i].score) ===
+        Number(score)
+      ){
+
+        found = i + 1;
+
+        break;
+
+      }
+
+    }
+
+    if(found > 0){
+
+      rankInfo.textContent =
+        "🌎 WORLD RANK #" +
+        found;
+
+    }
+    else{
+
+      rankInfo.textContent =
+        "🌎 ONLINE RANKING UPDATED";
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Rank error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   OPEN RANKING
+===================================================== */
+
+function openRanking(){
+
+  startScreen.classList.add(
+    "hidden"
+  );
+
+  overScreen.classList.add(
+    "hidden"
+  );
+
+  rankingScreen.classList.remove(
+    "hidden"
+  );
+
+  loadRanking();
+
+}
+
+
+/* =====================================================
+   CLOSE RANKING
+===================================================== */
+
+function closeRanking(){
+
+  rankingScreen.classList.add(
+    "hidden"
+  );
+
+  startScreen.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* =====================================================
    AUDIO
-========================= */
+===================================================== */
 
 let audio = null;
 
-function beep(freq,duration=.07,type="sine",volume=.035){
+function beep(
+  freq,
+  duration=.07,
+  type="sine",
+  volume=.035
+){
 
   try{
 
     if(!audio){
-      audio = new (window.AudioContext || window.webkitAudioContext)();
+
+      audio =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
     }
 
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
+    const osc =
+      audio.createOscillator();
 
-    osc.type = type;
-    osc.frequency.value = freq;
+    const gain =
+      audio.createGain();
 
-    gain.gain.setValueAtTime(volume,audio.currentTime);
+    osc.type =
+      type;
+
+    osc.frequency.value =
+      freq;
+
+    gain.gain.setValueAtTime(
+      volume,
+      audio.currentTime
+    );
 
     gain.gain.exponentialRampToValueAtTime(
       .001,
-      audio.currentTime + duration
+      audio.currentTime +
+      duration
     );
 
     osc.connect(gain);
-    gain.connect(audio.destination);
+    gain.connect(
+      audio.destination
+    );
 
     osc.start();
-    osc.stop(audio.currentTime + duration);
+
+    osc.stop(
+      audio.currentTime +
+      duration
+    );
 
   }catch(e){}
 
 }
 
 
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
 
 function startGame(){
 
-  startScreen.classList.add("hidden");
-  overScreen.classList.add("hidden");
+  if(!playerName){
+
+    openNameModal();
+
+    return;
+
+  }
+
+  startScreen.classList.add(
+    "hidden"
+  );
+
+  overScreen.classList.add(
+    "hidden"
+  );
+
+  rankingScreen.classList.add(
+    "hidden"
+  );
 
   arena.innerHTML = "";
 
@@ -629,7 +1634,9 @@ function startGame(){
   fever = false;
   feverTime = 0;
 
-  game.classList.remove("fever");
+  game.classList.remove(
+    "fever"
+  );
 
   running = true;
 
@@ -637,69 +1644,103 @@ function startGame(){
 
   spawn();
 
-  clearInterval(spawnTimer);
-  clearInterval(clockTimer);
+  clearInterval(
+    spawnTimer
+  );
 
-  spawnTimer = setInterval(()=>{
-    if(running) spawn();
-  },spawnRate());
+  clearInterval(
+    clockTimer
+  );
 
-  clockTimer = setInterval(tick,1000);
+  spawnTimer =
+    setInterval(
+      ()=>{
+        if(running){
+          spawn();
+        }
+      },
+      spawnRate()
+    );
+
+  clockTimer =
+    setInterval(
+      tick,
+      1000
+    );
 
   beep(500,.08);
-  setTimeout(()=>beep(800,.1),80);
+
+  setTimeout(
+    ()=>beep(800,.1),
+    80
+  );
+
 }
 
 
-/* =========================
+/* =====================================================
    CLOCK
-========================= */
+===================================================== */
 
 function tick(){
 
-  if(!running)return;
+  if(!running){
+    return;
+  }
 
   elapsed++;
 
-  level = Math.floor(elapsed / 8);
+  level =
+    Math.floor(
+      elapsed / 8
+    );
 
   if(fever){
 
     feverTime--;
 
     if(feverTime <= 0){
+
       fever = false;
-      game.classList.remove("fever");
+
+      game.classList.remove(
+        "fever"
+      );
+
     }
 
   }
 
   meterBar.style.width =
-    ((elapsed % 30) / 30 * 100) + "%";
+    (
+      (elapsed % 30) /
+      30 *
+      100
+    ) +
+    "%";
 
-  /*
-    タイマーを更新して速度を変える
-  */
+  clearInterval(
+    spawnTimer
+  );
 
-  clearInterval(spawnTimer);
-
-  spawnTimer = setInterval(()=>{
-    if(running) spawn();
-  },spawnRate());
+  spawnTimer =
+    setInterval(
+      ()=>{
+        if(running){
+          spawn();
+        }
+      },
+      spawnRate()
+    );
 
 }
 
 
-/* =========================
+/* =====================================================
    DIFFICULTY
-========================= */
+===================================================== */
 
 function spawnRate(){
-
-  /*
-    最初 850ms
-    最終的に 230ms程度
-  */
 
   return Math.max(
     230,
@@ -709,6 +1750,7 @@ function spawnRate(){
   );
 
 }
+
 
 function targetSize(){
 
@@ -722,56 +1764,86 @@ function targetSize(){
 }
 
 
-/* =========================
+/* =====================================================
    SPAWN
-========================= */
+===================================================== */
 
 function spawn(){
 
-  if(!running)return;
+  if(!running){
+    return;
+  }
 
-  const t = document.createElement("div");
+  const t =
+    document.createElement(
+      "div"
+    );
 
-  const size = targetSize();
+  const size =
+    targetSize();
 
-  t.style.width = size + "px";
-  t.style.height = size + "px";
+  t.style.width =
+    size + "px";
 
-  const rect = arena.getBoundingClientRect();
+  t.style.height =
+    size + "px";
+
+  const rect =
+    arena.getBoundingClientRect();
 
   t.style.left =
-    (10 + Math.random()*(rect.width-20)) + "px";
+    (
+      10 +
+      Math.random() *
+      (rect.width - 20)
+    ) +
+    "px";
 
   t.style.top =
-    (45 + Math.random()*(rect.height-80)) + "px";
+    (
+      45 +
+      Math.random() *
+      (rect.height - 80)
+    ) +
+    "px";
 
-
-  /*
-    危険度
-  */
 
   const danger =
     Math.min(
       .48,
       .10 +
-      level*.025 +
-      combo*.004
+      level * .025 +
+      combo * .004
     );
 
   const gold =
-    Math.min(.08,.025+level*.003);
+    Math.min(
+      .08,
+      .025 +
+      level * .003
+    );
 
   const special =
-    level >= 2 ? .07 : 0;
+    level >= 2
+    ? .07
+    : 0;
 
-  const r = Math.random();
+  const r =
+    Math.random();
 
-  let type = "safe";
+  let type =
+    "safe";
 
   if(r < gold){
-    type = "gold";
+
+    type =
+      "gold";
+
   }
-  else if(r < gold + special){
+  else if(
+    r <
+    gold + special
+  ){
 
     type =
       Math.random() < .5
@@ -779,109 +1851,142 @@ function spawn(){
       : "chain";
 
   }
-  else if(r < gold + special + danger){
-    type = "bomb";
+  else if(
+    r <
+    gold +
+    special +
+    danger
+  ){
+
+    type =
+      "bomb";
+
   }
 
-  t.className = "target " + type;
+  t.className =
+    "target " +
+    type;
 
-  if(type==="safe"){
+  if(type === "safe"){
     t.textContent = "✓";
   }
 
-  if(type==="gold"){
+  if(type === "gold"){
     t.textContent = "★";
   }
 
-  if(type==="bomb"){
+  if(type === "bomb"){
     t.textContent = "☠";
   }
 
-  if(type==="mult"){
+  if(type === "mult"){
     t.textContent = "×2";
   }
 
-  if(type==="chain"){
+  if(type === "chain"){
     t.textContent = "⚡";
   }
 
   arena.appendChild(t);
 
 
-  /*
-    画面に残る時間
-  */
+  const lifetime =
+    Math.max(
+      560,
+      1350 -
+      level * 65 -
+      combo * 7
+    );
 
-  const lifetime = Math.max(
-    560,
-    1350 -
-    level*65 -
-    combo*7
-  );
+  const timeout =
+    setTimeout(
+      ()=>{
 
-  const timeout = setTimeout(()=>{
+        if(!t.isConnected){
+          return;
+        }
 
-    if(!t.isConnected)return;
+        if(
+          t.classList.contains("safe") ||
+          t.classList.contains("gold") ||
+          t.classList.contains("mult") ||
+          t.classList.contains("chain")
+        ){
 
-    if(
-      t.classList.contains("safe") ||
-      t.classList.contains("gold") ||
-      t.classList.contains("mult") ||
-      t.classList.contains("chain")
-    ){
+          miss(t);
 
-      miss(t);
+        }
+        else{
 
-    }else{
+          t.remove();
 
-      t.remove();
+        }
+
+      },
+      lifetime
+    );
+
+
+  t.addEventListener(
+    "pointerdown",
+    (e)=>{
+
+      e.preventDefault();
+
+      clearTimeout(
+        timeout
+      );
+
+      if(!running){
+        return;
+      }
+
+      hit(t);
 
     }
-
-  },lifetime);
-
-
-  t.addEventListener("pointerdown",(e)=>{
-
-    e.preventDefault();
-
-    clearTimeout(timeout);
-
-    if(!running)return;
-
-    hit(t);
-
-  });
+  );
 
 }
 
 
-/* =========================
+/* =====================================================
    HIT
-========================= */
+===================================================== */
 
 function hit(t){
 
-  if(t.classList.contains("hit"))return;
+  if(
+    t.classList.contains("hit")
+  ){
+    return;
+  }
 
   t.classList.add("hit");
 
-  if(t.classList.contains("bomb")){
+  if(
+    t.classList.contains("bomb")
+  ){
 
     bomb();
 
   }
-  else if(t.classList.contains("gold")){
+  else if(
+    t.classList.contains("gold")
+  ){
 
     gold(t);
 
   }
-  else if(t.classList.contains("mult")){
+  else if(
+    t.classList.contains("mult")
+  ){
 
     multi(t);
 
   }
-  else if(t.classList.contains("chain")){
+  else if(
+    t.classList.contains("chain")
+  ){
 
     chain(t);
 
@@ -892,52 +1997,85 @@ function hit(t){
 
   }
 
-  setTimeout(()=>{
-    if(t.isConnected)t.remove();
-  },200);
+  setTimeout(
+    ()=>{
+      if(t.isConnected){
+        t.remove();
+      }
+    },
+    200
+  );
 
 }
 
 
-/* =========================
+/* =====================================================
    SAFE
-========================= */
+===================================================== */
 
 function safe(t){
 
   combo++;
-  maxCombo=Math.max(maxCombo,combo);
 
-  multiplier=getMultiplier();
+  maxCombo =
+    Math.max(
+      maxCombo,
+      combo
+    );
+
+  multiplier =
+    getMultiplier();
 
   const gain =
     10 *
     multiplier *
     (fever ? 2 : 1);
 
-  score+=gain;
+  score += gain;
 
   coins++;
 
   save();
 
-  pop(t,"+"+gain);
+  pop(
+    t,
+    "+" + gain
+  );
 
-  particles(t,8);
+  particles(
+    t,
+    8
+  );
 
   beep(
-    420 + Math.min(combo,30)*18,
+    420 +
+    Math.min(
+      combo,
+      30
+    ) *
+    18,
     .05
   );
 
-  if(combo===5 || combo===10 || combo===20 || combo===30){
+  if(
+    combo === 5 ||
+    combo === 10 ||
+    combo === 20 ||
+    combo === 30
+  ){
 
     flashCombo(
-      combo+" COMBO!",
-      "倍率 ×"+multiplier
+      combo +
+      " COMBO!",
+      "倍率 ×" +
+      multiplier
     );
 
-    beep(900,.1,"triangle");
+    beep(
+      900,
+      .1,
+      "triangle"
+    );
 
   }
 
@@ -946,126 +2084,205 @@ function safe(t){
 }
 
 
-/* =========================
+/* =====================================================
    GOLD
-========================= */
+===================================================== */
 
 function gold(t){
 
   combo++;
-  maxCombo=Math.max(maxCombo,combo);
 
-  multiplier=getMultiplier();
+  maxCombo =
+    Math.max(
+      maxCombo,
+      combo
+    );
+
+  multiplier =
+    getMultiplier();
 
   const gain =
     100 *
     multiplier *
     (fever ? 2 : 1);
 
-  score+=gain;
+  score += gain;
 
-  coins+=5;
+  coins += 5;
 
   save();
 
-  pop(t,"+"+gain+" 🪙");
+  pop(
+    t,
+    "+" +
+    gain +
+    " 🪙"
+  );
 
-  particles(t,20);
+  particles(
+    t,
+    20
+  );
 
   activateFever();
 
-  beep(1100,.1,"triangle");
-  setTimeout(()=>beep(1450,.12,"triangle"),70);
+  beep(
+    1100,
+    .1,
+    "triangle"
+  );
+
+  setTimeout(
+    ()=>{
+      beep(
+        1450,
+        .12,
+        "triangle"
+      );
+    },
+    70
+  );
 
   updateHUD();
 
 }
 
 
-/* =========================
+/* =====================================================
    MULT
-========================= */
+===================================================== */
 
 function multi(t){
 
   combo++;
-  maxCombo=Math.max(maxCombo,combo);
 
-  multiplier=Math.min(
-    12,
-    multiplier+2
-  );
+  maxCombo =
+    Math.max(
+      maxCombo,
+      combo
+    );
+
+  multiplier =
+    Math.min(
+      12,
+      multiplier + 2
+    );
 
   const gain =
     20 *
     multiplier *
     (fever ? 2 : 1);
 
-  score+=gain;
+  score += gain;
 
-  coins+=2;
+  coins += 2;
 
   save();
 
-  pop(t,"×2  +"+gain);
+  pop(
+    t,
+    "×2 +" +
+    gain
+  );
 
-  particles(t,14);
+  particles(
+    t,
+    14
+  );
 
   flashCombo(
     "POWER UP",
-    "倍率 ×"+multiplier
+    "倍率 ×" +
+    multiplier
   );
 
-  beep(700,.08,"square");
-  beep(1000,.1,"triangle");
+  beep(
+    700,
+    .08,
+    "square"
+  );
+
+  beep(
+    1000,
+    .1,
+    "triangle"
+  );
 
   updateHUD();
 
 }
 
 
-/* =========================
+/* =====================================================
    CHAIN
-========================= */
+===================================================== */
 
 function chain(t){
 
   combo++;
-  maxCombo=Math.max(maxCombo,combo);
 
-  multiplier=getMultiplier();
+  maxCombo =
+    Math.max(
+      maxCombo,
+      combo
+    );
+
+  multiplier =
+    getMultiplier();
 
   const gain =
     30 *
     multiplier *
     (fever ? 2 : 1);
 
-  score+=gain;
-  coins+=3;
+  score += gain;
+
+  coins += 3;
 
   save();
 
-  pop(t,"CHAIN!");
+  pop(
+    t,
+    "CHAIN!"
+  );
 
-  particles(t,20);
+  particles(
+    t,
+    20
+  );
 
   flashCombo(
     "CHAIN!",
     "ターゲット大量出現"
   );
 
-  beep(600,.08,"triangle");
-  beep(900,.08,"triangle");
+  beep(
+    600,
+    .08,
+    "triangle"
+  );
 
-  /*
-    一気に追加
-  */
+  beep(
+    900,
+    .08,
+    "triangle"
+  );
 
-  for(let i=0;i<5;i++){
 
-    setTimeout(()=>{
-      if(running)spawn();
-    },i*90);
+  for(
+    let i=0;
+    i<5;
+    i++
+  ){
+
+    setTimeout(
+      ()=>{
+        if(running){
+          spawn();
+        }
+      },
+      i * 90
+    );
 
   }
 
@@ -1074,27 +2291,43 @@ function chain(t){
 }
 
 
-/* =========================
+/* =====================================================
    BOMB
-========================= */
+===================================================== */
 
 function bomb(){
 
   lives--;
 
-  combo=0;
-  multiplier=1;
+  combo = 0;
 
-  game.classList.remove("shake");
+  multiplier = 1;
+
+  game.classList.remove(
+    "shake"
+  );
 
   void game.offsetWidth;
 
-  game.classList.add("shake");
+  game.classList.add(
+    "shake"
+  );
 
-  beep(80,.25,"sawtooth",.06);
+  beep(
+    80,
+    .25,
+    "sawtooth",
+    .06
+  );
 
-  if(navigator.vibrate){
-    navigator.vibrate([80,50,120]);
+  if(
+    navigator.vibrate
+  ){
+
+    navigator.vibrate(
+      [80,50,120]
+    );
+
   }
 
   flashCombo(
@@ -1104,16 +2337,18 @@ function bomb(){
 
   updateHUD();
 
-  if(lives<=0){
+  if(lives <= 0){
+
     endGame();
+
   }
 
 }
 
 
-/* =========================
+/* =====================================================
    MISS
-========================= */
+===================================================== */
 
 function miss(t){
 
@@ -1121,61 +2356,87 @@ function miss(t){
 
   lives--;
 
-  combo=0;
-  multiplier=1;
+  combo = 0;
+
+  multiplier = 1;
 
   popAt(
     t,
     "MISS!"
   );
 
-  beep(120,.15,"square");
+  beep(
+    120,
+    .15,
+    "square"
+  );
 
   updateHUD();
 
-  if(lives<=0){
+  if(lives <= 0){
+
     endGame();
+
   }
 
 }
 
 
-/* =========================
+/* =====================================================
    MULTIPLIER
-========================= */
+===================================================== */
 
 function getMultiplier(){
 
-  if(combo>=30)return 12;
-  if(combo>=20)return 8;
-  if(combo>=12)return 5;
-  if(combo>=7)return 3;
-  if(combo>=3)return 2;
+  if(combo >= 30){
+    return 12;
+  }
+
+  if(combo >= 20){
+    return 8;
+  }
+
+  if(combo >= 12){
+    return 5;
+  }
+
+  if(combo >= 7){
+    return 3;
+  }
+
+  if(combo >= 3){
+    return 2;
+  }
 
   return 1;
 
 }
 
 
-/* =========================
+/* =====================================================
    FEVER
-========================= */
+===================================================== */
 
 function activateFever(){
 
-  fever=true;
-  feverTime=7;
+  fever = true;
 
-  game.classList.add("fever");
+  feverTime = 7;
 
-  showEvent("🔥 FEVER! SCORE ×2");
+  game.classList.add(
+    "fever"
+  );
+
+  showEvent(
+    "🔥 FEVER! SCORE ×2"
+  );
 
 }
 
 
-/* =========================
+/* =====================================================
    HUD
-========================= */
+===================================================== */
 
 function updateHUD(){
 
@@ -1183,36 +2444,60 @@ function updateHUD(){
     score.toLocaleString();
 
   comboEl.textContent =
-    "x"+multiplier;
+    "x" +
+    multiplier;
 
   comboEl.style.color =
-    multiplier>=5
+    multiplier >= 5
     ? "#ffda45"
     : "#fff";
 
   livesEl.textContent =
-    "♥".repeat(Math.max(0,lives))+
-    "♡".repeat(Math.max(0,3-lives));
+    "♥".repeat(
+      Math.max(
+        0,
+        lives
+      )
+    ) +
+    "♡".repeat(
+      Math.max(
+        0,
+        3-lives
+      )
+    );
 
   coinEl.textContent =
-    "🪙 "+coins;
+    "🪙 " +
+    coins;
 
 }
 
 
-/* =========================
+/* =====================================================
    POPUPS
-========================= */
+===================================================== */
 
-function pop(t,text){
+function pop(
+  t,
+  text
+){
 
-  const p=document.createElement("div");
+  const p =
+    document.createElement(
+      "div"
+    );
 
-  p.className="pop";
-  p.textContent=text;
+  p.className =
+    "pop";
 
-  p.style.left=t.style.left;
-  p.style.top=t.style.top;
+  p.textContent =
+    text;
+
+  p.style.left =
+    t.style.left;
+
+  p.style.top =
+    t.style.top;
 
   p.style.color =
     text.includes("🪙")
@@ -1221,52 +2506,95 @@ function pop(t,text){
 
   arena.appendChild(p);
 
-  setTimeout(()=>p.remove(),700);
+  setTimeout(
+    ()=>p.remove(),
+    700
+  );
 
 }
 
 
-function popAt(t,text){
+function popAt(
+  t,
+  text
+){
 
-  const p=document.createElement("div");
+  const p =
+    document.createElement(
+      "div"
+    );
 
-  p.className="pop";
-  p.textContent=text;
+  p.className =
+    "pop";
 
-  p.style.left=t.style.left;
-  p.style.top=t.style.top;
+  p.textContent =
+    text;
 
-  p.style.color="#ff4d67";
+  p.style.left =
+    t.style.left;
+
+  p.style.top =
+    t.style.top;
+
+  p.style.color =
+    "#ff4d67";
 
   arena.appendChild(p);
 
-  setTimeout(()=>p.remove(),700);
+  setTimeout(
+    ()=>p.remove(),
+    700
+  );
 
 }
 
 
-/* =========================
+/* =====================================================
    COMBO FLASH
-========================= */
+===================================================== */
 
 let flashTimer;
 
-function flashCombo(big,small){
+function flashCombo(
+  big,
+  small
+){
 
-  clearTimeout(flashTimer);
+  clearTimeout(
+    flashTimer
+  );
 
-  comboFlash.innerHTML=`
-    <div class="big">${big}</div>
-    <div class="small">${small}</div>
-  `;
+  comboFlash.innerHTML =
+    `
+    <div class="big">
+      ${big}
+    </div>
 
-  comboFlash.style.opacity="1";
+    <div class="small">
+      ${small}
+    </div>
+    `;
+
+  comboFlash.style.opacity =
+    "1";
 
   comboFlash.animate(
     [
-      {transform:"translate(-50%,-50%) scale(.5)",opacity:0},
-      {transform:"translate(-50%,-50%) scale(1.15)",opacity:1},
-      {transform:"translate(-50%,-50%) scale(1)",opacity:0}
+      {
+        transform:
+          "translate(-50%,-50%) scale(.5)",
+        opacity:0
+      },
+      {
+        transform:
+          "translate(-50%,-50%) scale(1.15)",
+        opacity:1
+      },
+      {
+        transform:
+          "translate(-50%,-50%) scale(1)",
+        opacity:0
+      }
     ],
     {
       duration:700,
@@ -1274,73 +2602,118 @@ function flashCombo(big,small){
     }
   );
 
-  flashTimer=setTimeout(()=>{
-    comboFlash.style.opacity="0";
-  },700);
+  flashTimer =
+    setTimeout(
+      ()=>{
+        comboFlash.style.opacity =
+          "0";
+      },
+      700
+    );
 
 }
 
 
-/* =========================
+/* =====================================================
    EVENT
-========================= */
+===================================================== */
 
 function showEvent(text){
 
-  eventEl.textContent=text;
+  eventEl.textContent =
+    text;
 
-  eventEl.classList.remove("show");
+  eventEl.classList.remove(
+    "show"
+  );
 
   void eventEl.offsetWidth;
 
-  eventEl.classList.add("show");
+  eventEl.classList.add(
+    "show"
+  );
 
 }
 
 
-/* =========================
+/* =====================================================
    PARTICLES
-========================= */
+===================================================== */
 
-function particles(t,count){
+function particles(
+  t,
+  count
+){
 
-  const x=parseFloat(t.style.left);
-  const y=parseFloat(t.style.top);
+  const x =
+    parseFloat(
+      t.style.left
+    );
 
-  for(let i=0;i<count;i++){
+  const y =
+    parseFloat(
+      t.style.top
+    );
 
-    const p=document.createElement("div");
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
 
-    p.className="particle";
+    const p =
+      document.createElement(
+        "div"
+      );
 
-    p.style.left=x+"px";
-    p.style.top=y+"px";
+    p.className =
+      "particle";
 
-    const a=Math.random()*Math.PI*2;
-    const d=30+Math.random()*80;
+    p.style.left =
+      x + "px";
+
+    p.style.top =
+      y + "px";
+
+    const a =
+      Math.random() *
+      Math.PI *
+      2;
+
+    const d =
+      30 +
+      Math.random() *
+      80;
 
     p.style.setProperty(
       "--x",
-      Math.cos(a)*d+"px"
+      Math.cos(a) *
+      d +
+      "px"
     );
 
     p.style.setProperty(
       "--y",
-      Math.sin(a)*d+"px"
+      Math.sin(a) *
+      d +
+      "px"
     );
 
     arena.appendChild(p);
 
-    setTimeout(()=>p.remove(),600);
+    setTimeout(
+      ()=>p.remove(),
+      600
+    );
 
   }
 
 }
 
 
-/* =========================
-   SAVE
-========================= */
+/* =====================================================
+   LOCAL SAVE
+===================================================== */
 
 function save(){
 
@@ -1349,9 +2722,12 @@ function save(){
     coins
   );
 
-  if(score>bestScore){
+  if(
+    score > bestScore
+  ){
 
-    bestScore=score;
+    bestScore =
+      score;
 
     localStorage.setItem(
       "rod2_best",
@@ -1360,9 +2736,12 @@ function save(){
 
   }
 
-  if(maxCombo>bestCombo){
+  if(
+    maxCombo > bestCombo
+  ){
 
-    bestCombo=maxCombo;
+    bestCombo =
+      maxCombo;
 
     localStorage.setItem(
       "rod2_combo",
@@ -1374,28 +2753,40 @@ function save(){
 }
 
 
-/* =========================
+/* =====================================================
    GAME OVER
-========================= */
+===================================================== */
 
-function endGame(){
+async function endGame(){
 
-  running=false;
+  running = false;
 
-  clearInterval(spawnTimer);
-  clearInterval(clockTimer);
+  clearInterval(
+    spawnTimer
+  );
 
-  arena.innerHTML="";
+  clearInterval(
+    clockTimer
+  );
 
-  const isRecord =
-    score>Number(localStorage.getItem("rod2_best_before")||0);
+  arena.innerHTML = "";
 
   const previousBest =
-    Number(localStorage.getItem("rod2_best_before")||0);
+    Number(
+      localStorage.getItem(
+        "rod2_best_before"
+      ) || 0
+    );
 
-  if(score>bestScore){
+  const isRecord =
+    score > previousBest;
 
-    bestScore=score;
+  if(
+    score > bestScore
+  ){
+
+    bestScore =
+      score;
 
     localStorage.setItem(
       "rod2_best",
@@ -1404,9 +2795,12 @@ function endGame(){
 
   }
 
-  if(maxCombo>bestCombo){
+  if(
+    maxCombo > bestCombo
+  ){
 
-    bestCombo=maxCombo;
+    bestCombo =
+      maxCombo;
 
     localStorage.setItem(
       "rod2_combo",
@@ -1429,43 +2823,109 @@ function endGame(){
   maxComboEl.textContent =
     bestCombo;
 
-  /*
-    初回プレイで0から記録更新扱いにならないようにする
-  */
-
   recordEl.classList.toggle(
     "hidden",
-    !(score>previousBest && previousBest>0)
+    !(
+      isRecord &&
+      previousBest > 0
+    )
   );
 
-  document.getElementById("missionText").textContent =
-    getMissionText();
+  document
+    .getElementById(
+      "missionText"
+    )
+    .textContent =
+      getMissionText();
 
-  overScreen.classList.remove("hidden");
+  rankInfo.textContent =
+    "ランキング送信中...";
+
+  overScreen.classList.remove(
+    "hidden"
+  );
+
+
+  /*
+    オンラインランキングへ
+  */
+
+  const submitted =
+    await submitScore();
+
+  if(submitted){
+
+    rankInfo.textContent =
+      "🌎 NEW SCORE SENT!";
+
+    /*
+      少し待ってから順位取得
+    */
+
+    setTimeout(
+      findMyRank,
+      500
+    );
+
+  }
+  else{
+
+    if(
+      supabaseReady()
+    ){
+
+      rankInfo.textContent =
+        "🌎 ランキング更新なし";
+
+    }
+    else{
+
+      rankInfo.textContent =
+        "ランキング未設定";
+
+    }
+
+  }
 
 }
 
 
-/* =========================
+/* =====================================================
    MISSIONS
-========================= */
+===================================================== */
 
 function getMissionText(){
 
-  if(maxCombo>=20){
+  if(
+    maxCombo >= 20
+  ){
+
     return "20 COMBO達成！";
+
   }
 
-  if(score>=5000){
+  if(
+    score >= 5000
+  ){
+
     return "5,000点突破！";
+
   }
 
-  if(score>=2000){
+  if(
+    score >= 2000
+  ){
+
     return "2,000点突破！";
+
   }
 
-  if(coins>=20){
+  if(
+    coins >= 20
+  ){
+
     return "コイン20枚以上獲得！";
+
   }
 
   return "次は1,000点を目指せ！";
@@ -1473,57 +2933,230 @@ function getMissionText(){
 }
 
 
-/* =========================
+/* =====================================================
    BUTTONS
-========================= */
+===================================================== */
 
-document.getElementById("startBtn")
-  .addEventListener("click",startGame);
-
-document.getElementById("retry")
-  .addEventListener("click",startGame);
-
-document.getElementById("titleBtn")
-  .addEventListener("click",()=>{
-
-    overScreen.classList.add("hidden");
-    startScreen.classList.remove("hidden");
-
-  });
+document
+  .getElementById(
+    "startBtn"
+  )
+  .addEventListener(
+    "click",
+    startGame
+  );
 
 
-document.getElementById("resetBtn")
-  .addEventListener("click",()=>{
+document
+  .getElementById(
+    "retry"
+  )
+  .addEventListener(
+    "click",
+    startGame
+  );
 
-    if(!confirm("スコア・コイン・記録を全部消します。")){
-      return;
+
+document
+  .getElementById(
+    "titleBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      overScreen.classList.add(
+        "hidden"
+      );
+
+      startScreen.classList.remove(
+        "hidden"
+      );
+
+      updatePlayerDisplay();
+
     }
-
-    localStorage.removeItem("rod2_coins");
-    localStorage.removeItem("rod2_best");
-    localStorage.removeItem("rod2_combo");
-    localStorage.removeItem("rod2_best_before");
-
-    coins=0;
-    bestScore=0;
-    bestCombo=0;
-
-    coinEl.textContent="🪙 0";
-
-  });
+  );
 
 
-/*
-  iPhoneで長押し・スクロール等を防止
-*/
+document
+  .getElementById(
+    "rankingBtn"
+  )
+  .addEventListener(
+    "click",
+    openRanking
+  );
+
+
+document
+  .getElementById(
+    "overRankingBtn"
+  )
+  .addEventListener(
+    "click",
+    openRanking
+  );
+
+
+document
+  .getElementById(
+    "closeRankingBtn"
+  )
+  .addEventListener(
+    "click",
+    closeRanking
+  );
+
+
+document
+  .getElementById(
+    "refreshRankingBtn"
+  )
+  .addEventListener(
+    "click",
+    loadRanking
+  );
+
+
+document
+  .getElementById(
+    "changeNameBtn"
+  )
+  .addEventListener(
+    "click",
+    openNameModal
+  );
+
+
+document
+  .getElementById(
+    "saveNameBtn"
+  )
+  .addEventListener(
+    "click",
+    savePlayerName
+  );
+
+
+nameInput
+  .addEventListener(
+    "keydown",
+    e=>{
+
+      if(
+        e.key ===
+        "Enter"
+      ){
+
+        savePlayerName();
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+document
+  .getElementById(
+    "resetBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        !confirm(
+          "スコア・コイン・名前・記録を全部消します。"
+        )
+      ){
+
+        return;
+
+      }
+
+      localStorage.removeItem(
+        "rod2_coins"
+      );
+
+      localStorage.removeItem(
+        "rod2_best"
+      );
+
+      localStorage.removeItem(
+        "rod2_combo"
+      );
+
+      localStorage.removeItem(
+        "rod2_best_before"
+      );
+
+      localStorage.removeItem(
+        "rod2_player"
+      );
+
+      localStorage.removeItem(
+        "rod2_online_submitted_best"
+      );
+
+      coins = 0;
+      bestScore = 0;
+      bestCombo = 0;
+      playerName = "";
+
+      coinEl.textContent =
+        "🪙 0";
+
+      openNameModal();
+
+    }
+  );
+
+
+/* =====================================================
+   TOUCH PREVENTION
+===================================================== */
 
 document.addEventListener(
   "touchmove",
   e=>{
-    if(running)e.preventDefault();
+
+    if(running){
+      e.preventDefault();
+    }
+
   },
-  {passive:false}
+  {
+    passive:false
+  }
 );
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+coinEl.textContent =
+  "🪙 " +
+  coins;
+
+if(playerName){
+
+  updatePlayerDisplay();
+
+}
+else{
+
+  setTimeout(
+    openNameModal,
+    300
+  );
+
+}
 
 </script>
 
