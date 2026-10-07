@@ -2443,3 +2443,3613 @@ e=>{
 loadGame();
 
 loop();
+
+/* =========================================================
+   PART 2-A
+   SPECIAL ENEMIES
+========================================================= */
+
+
+/* =========================
+   SPECIAL ENEMY VARIABLES
+========================= */
+
+let specialSpawnTimer = 240;
+let stageBannerTimer = 0;
+let stageBannerText = "";
+
+let enemyWarnings = [];
+
+
+/* =========================
+   SPECIAL ENEMY SPAWN
+========================= */
+
+function spawnSpecialEnemy(){
+
+    if(!gameStarted) return;
+
+    const roll = Math.random();
+
+    let enemy;
+
+
+    /* 1. FLYING */
+
+    if(roll < 0.35){
+
+        enemy = {
+
+            type:"flying",
+
+            x:W+80,
+
+            y:180+
+              Math.random()*300,
+
+            w:52,
+            h:34,
+
+            hp:3,
+            maxHp:3,
+
+            speed:2.4+
+
+              stage*0.08,
+
+            shootTimer:
+              80+
+              Math.random()*80,
+
+            wave:Math.random()*
+                 Math.PI*2,
+
+            waveSpeed:
+              0.06+
+              Math.random()*0.03
+
+        };
+
+    }
+
+
+    /* 2. CHARGER */
+
+    else if(roll < 0.60){
+
+        enemy = {
+
+            type:"charger",
+
+            x:W+100,
+
+            y:groundY-65,
+
+            w:52,
+            h:65,
+
+            hp:4,
+            maxHp:4,
+
+            speed:1.4+
+
+              stage*0.06,
+
+            chargeSpeed:
+              9+
+
+              stage*0.25,
+
+            chargeTimer:
+              100+
+              Math.random()*100,
+
+            charging:false,
+
+            shootTimer:9999
+
+        };
+
+    }
+
+
+    /* 3. SNIPER */
+
+    else if(roll < 0.80){
+
+        enemy = {
+
+            type:"sniper",
+
+            x:W+100,
+
+            y:groundY-58,
+
+            w:44,
+            h:58,
+
+            hp:3,
+            maxHp:3,
+
+            speed:1.0,
+
+            shootTimer:
+              80+
+              Math.random()*100,
+
+            warning:false
+
+        };
+
+    }
+
+
+    /* 4. ELITE */
+
+    else {
+
+        enemy = {
+
+            type:"elite",
+
+            x:W+120,
+
+            y:groundY-85,
+
+            w:62,
+            h:85,
+
+            hp:12+
+               stage*2,
+
+            maxHp:12+
+                stage*2,
+
+            speed:1.0+
+                  stage*0.03,
+
+            shootTimer:
+              60+
+              Math.random()*80,
+
+            shield:2
+
+        };
+
+    }
+
+
+    enemies.push(enemy);
+
+}
+
+
+/* =========================
+   WARNING
+========================= */
+
+function createWarning(
+    text,
+    duration=80
+){
+
+    enemyWarnings.push({
+
+        text:text,
+
+        life:duration,
+
+        maxLife:duration
+
+    });
+
+}
+
+
+/* =========================
+   UPDATE WARNINGS
+========================= */
+
+function updateWarnings(){
+
+    enemyWarnings.forEach(
+        warning=>{
+
+            warning.life--;
+
+        }
+    );
+
+    enemyWarnings=
+        enemyWarnings.filter(
+            warning=>
+                warning.life>0
+        );
+
+}
+
+
+/* =========================
+   SPECIAL SPAWN CONTROL
+========================= */
+
+function updateSpecialSpawn(){
+
+    if(!gameStarted)
+        return;
+
+    specialSpawnTimer--;
+
+    if(
+        specialSpawnTimer<=0
+    ){
+
+        /*
+           Stage 1:
+           special enemy is rare
+
+           Later stages:
+           increasingly common
+        */
+
+        const chance=
+            Math.min(
+                0.85,
+                0.25+
+                stage*0.05
+            );
+
+        if(
+            Math.random()<
+            chance
+        ){
+
+            spawnSpecialEnemy();
+
+        }
+
+
+        specialSpawnTimer=
+            Math.max(
+                100,
+                280-
+                stage*12
+            );
+
+    }
+
+}
+
+
+/* =========================
+   UPDATE SPECIAL ENEMIES
+========================================================= */
+
+function updateSpecialEnemies(){
+
+    enemies.forEach(
+        enemy=>{
+
+            if(
+                enemy.type==="flying"
+            ){
+
+                updateFlyingEnemy(
+                    enemy
+                );
+
+            }
+
+
+            else if(
+                enemy.type==="charger"
+            ){
+
+                updateChargerEnemy(
+                    enemy
+                );
+
+            }
+
+
+            else if(
+                enemy.type==="sniper"
+            ){
+
+                updateSniperEnemy(
+                    enemy
+                );
+
+            }
+
+
+            else if(
+                enemy.type==="elite"
+            ){
+
+                updateEliteEnemy(
+                    enemy
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
+   FLYING ENEMY
+========================= */
+
+function updateFlyingEnemy(
+    enemy
+){
+
+    enemy.x -=
+        enemy.speed;
+
+
+    enemy.wave +=
+        enemy.waveSpeed;
+
+
+    enemy.y +=
+        Math.sin(
+            enemy.wave
+        )*2.5;
+
+
+    enemy.shootTimer--;
+
+
+    if(
+        enemy.shootTimer<=0
+    ){
+
+        enemyBullets.push({
+
+            x:enemy.x,
+
+            y:enemy.y+
+              enemy.h/2,
+
+            w:16,
+            h:7,
+
+            speed:-6.5-
+
+                  stage*0.1,
+
+            damage:1
+
+        });
+
+
+        enemy.shootTimer=
+            100+
+            Math.random()*100;
+
+    }
+
+}
+
+
+/* =========================
+   CHARGER
+========================= */
+
+function updateChargerEnemy(
+    enemy
+){
+
+    if(
+        !enemy.charging
+    ){
+
+        enemy.x -=
+            enemy.speed;
+
+        enemy.chargeTimer--;
+
+
+        if(
+            enemy.chargeTimer<=0
+        ){
+
+            enemy.charging=true;
+
+            createWarning(
+                "⚠ CHARGER!",
+                55
+            );
+
+        }
+
+    }
+
+    else{
+
+        enemy.x -=
+            enemy.chargeSpeed;
+
+    }
+
+
+    if(
+        enemy.x<0
+    ){
+
+        enemy.charging=false;
+
+        enemy.x=W+80;
+
+        enemy.chargeTimer=
+            100+
+            Math.random()*100;
+
+    }
+
+}
+
+
+/* =========================
+   SNIPER
+========================= */
+
+function updateSniperEnemy(
+    enemy
+){
+
+    enemy.x -=
+        enemy.speed;
+
+
+    enemy.shootTimer--;
+
+
+    if(
+        enemy.shootTimer<=45 &&
+        !enemy.warning
+    ){
+
+        enemy.warning=true;
+
+        createWarning(
+            "🎯 SNIPER!",
+            45
+        );
+
+    }
+
+
+    if(
+        enemy.shootTimer<=0
+    ){
+
+        /*
+           Sniper bullet:
+           faster than normal bullet
+        */
+
+        enemyBullets.push({
+
+            x:enemy.x,
+
+            y:enemy.y+
+              enemy.h/2,
+
+            w:28,
+            h:5,
+
+            speed:-12-
+
+                  stage*0.2,
+
+            damage:2
+
+        });
+
+
+        explosion(
+            enemy.x,
+            enemy.y+
+            enemy.h/2,
+            8
+        );
+
+
+        enemy.shootTimer=
+            150+
+            Math.random()*100;
+
+        enemy.warning=false;
+
+    }
+
+}
+
+
+/* =========================
+   ELITE
+========================= */
+
+function updateEliteEnemy(
+    enemy
+){
+
+    enemy.x -=
+        enemy.speed;
+
+
+    enemy.shootTimer--;
+
+
+    if(
+        enemy.shootTimer<=0
+    ){
+
+        /*
+           3-way spread shot
+        */
+
+        for(
+            let i=-1;
+            i<=1;
+            i++
+        ){
+
+            enemyBullets.push({
+
+                x:enemy.x,
+
+                y:enemy.y+
+                  enemy.h/2,
+
+                w:12,
+                h:7,
+
+                speed:
+                    -6,
+
+                vy:
+                    i*1.7,
+
+                damage:1
+
+            });
+
+        }
+
+
+        enemy.shootTimer=
+            90+
+            Math.random()*70;
+
+    }
+
+}
+
+
+/* =========================
+   UPDATE ELITE BULLETS
+========================= */
+
+function updateEliteBullets(){
+
+    enemyBullets.forEach(
+        bullet=>{
+
+            if(
+                bullet.vy
+            ){
+
+                bullet.y +=
+                    bullet.vy;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
+   CHARGER COLLISION BOOST
+========================= */
+
+function specialEnemyCollision(){
+
+    for(
+        let i=enemies.length-1;
+        i>=0;
+        i--
+    ){
+
+        const enemy=
+            enemies[i];
+
+
+        if(
+            rectHit(
+                player,
+                enemy
+            )
+        ){
+
+            /*
+               Charger deals more damage
+            */
+
+            if(
+                enemy.type==="charger"
+            ){
+
+                if(
+                    player.invincible<=0
+                ){
+
+                    player.hp-=2;
+
+                    player.invincible=
+                        90;
+
+                    combo=0;
+
+                    explosion(
+                        player.x+
+                        player.w/2,
+
+                        player.y+
+                        player.h/2,
+
+                        35
+                    );
+
+                }
+
+            }
+
+            else if(
+                enemy.type==="elite"
+            ){
+
+                damagePlayer();
+
+            }
+
+            else{
+
+                damagePlayer();
+
+            }
+
+
+            enemies.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   SPECIAL BULLET DAMAGE
+========================= */
+
+function updateSpecialBulletDamage(){
+
+    for(
+        let i=
+            enemyBullets.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const bullet=
+            enemyBullets[i];
+
+
+        if(
+            rectHit(
+                bullet,
+                player
+            )
+        ){
+
+            enemyBullets.splice(
+                i,
+                1
+            );
+
+
+            if(
+                bullet.damage>=2
+            ){
+
+                if(
+                    player.invincible<=0
+                ){
+
+                    player.hp-=
+                        bullet.damage;
+
+                    player.invincible=
+                        80;
+
+                    combo=0;
+
+                    explosion(
+                        player.x+
+                        player.w/2,
+
+                        player.y+
+                        player.h/2,
+
+                        30
+                    );
+
+                }
+
+            }
+
+            else{
+
+                damagePlayer();
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   DRAW SPECIAL ENEMIES
+========================= */
+
+function drawSpecialEnemies(){
+
+    enemies.forEach(
+        enemy=>{
+
+            if(
+                enemy.type==="normal" ||
+                enemy.type==="fast" ||
+                enemy.type==="tank"
+            ){
+
+                return;
+
+            }
+
+
+            ctx.save();
+
+            ctx.translate(
+                enemy.x,
+                enemy.y
+            );
+
+
+            /* FLYING */
+
+            if(
+                enemy.type==="flying"
+            ){
+
+                ctx.fillStyle=
+                    "#673ab7";
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    0,
+                    enemy.h/2
+                );
+
+                ctx.lineTo(
+                    enemy.w/2,
+                    0
+                );
+
+                ctx.lineTo(
+                    enemy.w,
+                    enemy.h/2
+                );
+
+                ctx.lineTo(
+                    enemy.w/2,
+                    enemy.h
+                );
+
+                ctx.closePath();
+
+                ctx.fill();
+
+
+                ctx.fillStyle=
+                    "#ffeb3b";
+
+                ctx.fillRect(
+                    16,
+                    12,
+                    7,
+                    7
+                );
+
+                ctx.fillRect(
+                    31,
+                    12,
+                    7,
+                    7
+                );
+
+            }
+
+
+            /* CHARGER */
+
+            else if(
+                enemy.type==="charger"
+            ){
+
+                ctx.fillStyle=
+                    "#ff5722";
+
+                ctx.fillRect(
+                    0,
+                    10,
+                    enemy.w,
+                    enemy.h-10
+                );
+
+
+                ctx.fillStyle=
+                    "#bf360c";
+
+                ctx.fillRect(
+                    5,
+                    0,
+                    enemy.w-10,
+                    20
+                );
+
+
+                ctx.fillStyle=
+                    "#fff";
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    8,
+                    5
+                );
+
+                ctx.lineTo(
+                    0,
+                    -8
+                );
+
+                ctx.lineTo(
+                    18,
+                    3
+                );
+
+                ctx.closePath();
+
+                ctx.fill();
+
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    enemy.w-8,
+                    5
+                );
+
+                ctx.lineTo(
+                    enemy.w,
+                    -8
+                );
+
+                ctx.lineTo(
+                    enemy.w-18,
+                    3
+                );
+
+                ctx.closePath();
+
+                ctx.fill();
+
+            }
+
+
+            /* SNIPER */
+
+            else if(
+                enemy.type==="sniper"
+            ){
+
+                ctx.fillStyle=
+                    "#263238";
+
+                ctx.fillRect(
+                    3,
+                    8,
+                    enemy.w-6,
+                    enemy.h-8
+                );
+
+
+                ctx.fillStyle=
+                    "#ff1744";
+
+                ctx.fillRect(
+                    11,
+                    12,
+                    7,
+                    7
+                );
+
+                ctx.fillRect(
+                    26,
+                    12,
+                    7,
+                    7
+                );
+
+
+                ctx.fillStyle=
+                    "#111";
+
+                ctx.fillRect(
+                    25,
+                    30,
+                    28,
+                    5
+                );
+
+            }
+
+
+            /* ELITE */
+
+            else if(
+                enemy.type==="elite"
+            ){
+
+                ctx.fillStyle=
+                    "#111";
+
+                ctx.fillRect(
+                    0,
+                    8,
+                    enemy.w,
+                    enemy.h-8
+                );
+
+
+                ctx.strokeStyle=
+                    "#ff1744";
+
+                ctx.lineWidth=4;
+
+                ctx.strokeRect(
+                    2,
+                    10,
+                    enemy.w-4,
+                    enemy.h-12
+                );
+
+
+                ctx.fillStyle=
+                    "#ff1744";
+
+                ctx.fillRect(
+                    12,
+                    16,
+                    10,
+                    8
+                );
+
+                ctx.fillRect(
+                    40,
+                    16,
+                    10,
+                    8
+                );
+
+
+                /* SHIELD */
+
+                if(
+                    enemy.shield>0
+                ){
+
+                    ctx.strokeStyle=
+                        "rgba(0,220,255,.8)";
+
+                    ctx.lineWidth=5;
+
+                    ctx.beginPath();
+
+                    ctx.arc(
+                        enemy.w/2,
+                        enemy.h/2,
+                        enemy.w/2+8,
+                        0,
+                        Math.PI*2
+                    );
+
+                    ctx.stroke();
+
+                }
+
+            }
+
+
+            /* HP BAR */
+
+            const hpRate=
+                enemy.hp/
+                enemy.maxHp;
+
+
+            ctx.fillStyle="#222";
+
+            ctx.fillRect(
+                0,
+                -14,
+                enemy.w,
+                6
+            );
+
+
+            ctx.fillStyle="#00e676";
+
+            ctx.fillRect(
+                0,
+                -14,
+                enemy.w*hpRate,
+                6
+            );
+
+
+            ctx.restore();
+
+        }
+    );
+
+}
+
+
+/* =========================
+   ELITE SHIELD
+========================= */
+
+function damageElite(
+    enemy,
+    damage
+){
+
+    if(
+        enemy.shield>0
+    ){
+
+        enemy.shield--;
+
+        explosion(
+            enemy.x+
+            enemy.w/2,
+
+            enemy.y+
+            enemy.h/2,
+
+            10
+        );
+
+        return false;
+
+    }
+
+
+    enemy.hp-=damage;
+
+    return true;
+
+}
+
+
+/* =========================
+   REPLACE BULLET HIT
+========================= */
+
+function handleSpecialBulletHits(){
+
+    for(
+        let bi=
+            bullets.length-1;
+
+        bi>=0;
+
+        bi--
+    ){
+
+        const bullet=
+            bullets[bi];
+
+        for(
+            let ei=
+                enemies.length-1;
+
+            ei>=0;
+
+            ei--
+        ){
+
+            const enemy=
+                enemies[ei];
+
+
+            if(
+                rectHit(
+                    bullet,
+                    enemy
+                )
+            ){
+
+                bullets.splice(
+                    bi,
+                    1
+                );
+
+
+                let damaged=true;
+
+
+                if(
+                    enemy.type==="elite"
+                ){
+
+                    damaged=
+                        damageElite(
+                            enemy,
+                            bullet.damage
+                        );
+
+                }
+
+                else{
+
+                    enemy.hp-=
+                        bullet.damage;
+
+                }
+
+
+                explosion(
+                    bullet.x,
+                    bullet.y,
+                    6
+                );
+
+
+                if(
+                    damaged &&
+                    enemy.hp<=0
+                ){
+
+                    killEnemy(
+                        enemy
+                    );
+
+                }
+
+
+                break;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   STAGE BANNER
+========================= */
+
+function showStageBanner(){
+
+    stageBannerText=
+        "STAGE "+
+        stage;
+
+    stageBannerTimer=
+        120;
+
+}
+
+
+function updateStageBanner(){
+
+    if(
+        stageBannerTimer>0
+    ){
+
+        stageBannerTimer--;
+
+    }
+
+}
+
+
+function drawStageBanner(){
+
+    if(
+        stageBannerTimer<=0
+    )
+        return;
+
+
+    const alpha=
+        Math.min(
+            1,
+            stageBannerTimer/30
+        );
+
+
+    ctx.save();
+
+    ctx.globalAlpha=
+        alpha;
+
+    ctx.fillStyle=
+        "rgba(0,0,0,.65)";
+
+    ctx.fillRect(
+        0,
+        H/2-70,
+        W,
+        140
+    );
+
+
+    ctx.fillStyle="#fff";
+
+    ctx.font=
+        "bold 64px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.fillText(
+        stageBannerText,
+        W/2,
+        H/2+22
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   STAGE CHANGE OVERRIDE
+========================= */
+
+const oldUpdateStage=
+    updateStage;
+
+updateStage=function(){
+
+    const oldStage=
+        stage;
+
+    oldUpdateStage();
+
+    if(
+        stage!==oldStage
+    ){
+
+        showStageBanner();
+
+        explosion(
+            W/2,
+            H/2,
+            50
+        );
+
+    }
+
+    updateStageBanner();
+
+};
+
+
+/* =========================
+   WARNING DRAW
+========================= */
+
+function drawWarnings(){
+
+    if(
+        enemyWarnings.length===0
+    )
+        return;
+
+
+    ctx.save();
+
+    ctx.textAlign="center";
+
+    ctx.font=
+        "bold 34px Arial";
+
+
+    enemyWarnings.forEach(
+        warning=>{
+
+            const alpha=
+                Math.min(
+                    1,
+                    warning.life/15
+                );
+
+
+            ctx.globalAlpha=
+                alpha;
+
+            ctx.fillStyle=
+                "#ff1744";
+
+
+            ctx.fillText(
+                warning.text,
+                W/2,
+                210
+            );
+
+        }
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   FINAL PART 2-A UPDATE HOOK
+========================================================= */
+
+const oldUpdate=
+    update;
+
+update=function(){
+
+    oldUpdate();
+
+    if(
+        gameStarted
+    ){
+
+        updateSpecialSpawn();
+
+        updateSpecialEnemies();
+
+        updateEliteBullets();
+
+        specialEnemyCollision();
+
+        updateSpecialBulletDamage();
+
+        handleSpecialBulletHits();
+
+        updateWarnings();
+
+    }
+
+};
+
+
+/* =========================================================
+   FINAL PART 2-A DRAW HOOK
+========================================================= */
+
+const oldDraw=
+    draw;
+
+draw=function(){
+
+    oldDraw();
+
+    drawSpecialEnemies();
+
+    drawWarnings();
+
+    drawStageBanner();
+
+};
+
+
+/* =========================================================
+   START
+========================================================= */
+
+showStageBanner();
+/* =========================================================
+   PART 2-B
+   FEVER + COMBO + MINI BOSS
+========================================================= */
+
+
+/* =========================
+   FEVER
+========================= */
+
+let feverGauge = 0;
+let feverMax = 100;
+let feverTime = 0;
+let feverActive = false;
+
+let comboTimer = 0;
+const comboTimeout = 150;
+
+
+/* =========================
+   MINI BOSS
+========================= */
+
+let miniBoss = null;
+let miniBossTimer = 1800;
+let miniBossWarning = 0;
+
+
+/* =========================
+   FEVER GAIN
+========================= */
+
+function addFever(amount){
+
+    if(feverActive)
+        return;
+
+    feverGauge += amount;
+
+    feverGauge =
+        Math.min(
+            feverMax,
+            feverGauge
+        );
+
+
+    if(
+        feverGauge >= feverMax
+    ){
+
+        startFever();
+
+    }
+
+}
+
+
+/* =========================
+   START FEVER
+========================= */
+
+function startFever(){
+
+    feverActive = true;
+
+    feverTime = 600;
+
+    feverGauge = 0;
+
+    score += 500;
+
+    createWarning(
+        "🔥 FEVER!",
+        90
+    );
+
+
+    explosion(
+        player.x+
+        player.w/2,
+
+        player.y+
+        player.h/2,
+
+        60
+    );
+
+}
+
+
+/* =========================
+   UPDATE FEVER
+========================= */
+
+function updateFever(){
+
+    if(
+        feverActive
+    ){
+
+        feverTime--;
+
+        if(
+            feverTime<=0
+        ){
+
+            feverActive=false;
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   COMBO UPDATE
+========================= */
+
+function updateCombo(){
+
+    if(
+        combo>0
+    ){
+
+        comboTimer--;
+
+        if(
+            comboTimer<=0
+        ){
+
+            combo=0;
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   REPLACE KILL FUNCTION
+========================= */
+
+const oldKillEnemy=
+    killEnemy;
+
+killEnemy=function(enemy){
+
+    oldKillEnemy(enemy);
+
+    comboTimer=
+        comboTimeout;
+
+
+    /* FEVER BONUS */
+
+    addFever(
+        enemy.type==="elite"
+            ? 18
+            : 8
+    );
+
+
+    /* FEVER SCORE */
+
+    if(
+        feverActive
+    ){
+
+        score +=
+            100+
+            combo*20;
+
+    }
+
+};
+
+
+/* =========================
+   MINI BOSS SPAWN
+========================= */
+
+function spawnMiniBoss(){
+
+    if(
+        miniBoss ||
+        !gameStarted
+    )
+        return;
+
+
+    miniBoss={
+
+        type:"miniBoss",
+
+        x:W+150,
+
+        y:groundY-150,
+
+        w:110,
+
+        h:150,
+
+        hp:
+            80+
+            stage*20,
+
+        maxHp:
+            80+
+            stage*20,
+
+        speed:
+            0.8+
+
+            stage*0.03,
+
+        shootTimer:70,
+
+        attackTimer:150,
+
+        phase:0,
+
+        moveTimer:0
+
+    };
+
+
+    enemies.push(
+        miniBoss
+    );
+
+
+    miniBossWarning=120;
+
+
+    createWarning(
+        "⚠ MINI BOSS ⚠",
+        120
+    );
+
+}
+
+
+/* =========================
+   MINI BOSS UPDATE
+========================= */
+
+function updateMiniBoss(){
+
+    if(
+        !miniBoss
+    )
+        return;
+
+
+    if(
+        miniBoss.x>
+        W-170
+    ){
+
+        miniBoss.x -=
+            miniBoss.speed;
+
+    }
+
+
+    miniBoss.moveTimer++;
+
+
+    /*
+       上下移動
+    */
+
+    miniBoss.y =
+        groundY-150+
+        Math.sin(
+            miniBoss.moveTimer*
+            0.025
+        )*65;
+
+
+    miniBoss.shootTimer--;
+
+
+    if(
+        miniBoss.shootTimer<=0
+    ){
+
+        miniBossShoot();
+
+        miniBoss.shootTimer=
+            65+
+            Math.random()*35;
+
+    }
+
+
+    miniBoss.attackTimer--;
+
+
+    if(
+        miniBoss.attackTimer<=0
+    ){
+
+        miniBossSpecialAttack();
+
+        miniBoss.attackTimer=
+            180+
+            Math.random()*100;
+
+    }
+
+
+    if(
+        miniBoss.hp<=0
+    ){
+
+        defeatMiniBoss();
+
+    }
+
+}
+
+
+/* =========================
+   MINI BOSS SHOOT
+========================= */
+
+function miniBossShoot(){
+
+    if(!miniBoss)
+        return;
+
+
+    /*
+       5方向弾
+    */
+
+    for(
+        let i=-2;
+        i<=2;
+        i++
+    ){
+
+        enemyBullets.push({
+
+            x:
+                miniBoss.x,
+
+            y:
+                miniBoss.y+
+                miniBoss.h/2,
+
+            w:16,
+
+            h:9,
+
+            speed:
+                -6.5,
+
+            vy:
+                i*1.5,
+
+            damage:1
+
+        });
+
+    }
+
+
+    explosion(
+        miniBoss.x,
+        miniBoss.y+
+        miniBoss.h/2,
+        15
+    );
+
+}
+
+
+/* =========================
+   MINI BOSS SPECIAL ATTACK
+========================= */
+
+function miniBossSpecialAttack(){
+
+    if(!miniBoss)
+        return;
+
+
+    createWarning(
+        "⚠ ATTACK!",
+        45
+    );
+
+
+    /*
+       地上に危険エリアを作る
+    */
+
+    particles.push({
+
+        x:20,
+
+        y:groundY-8,
+
+        vx:0,
+
+        vy:0,
+
+        life:45,
+
+        size:W
+
+    });
+
+
+    /*
+       大量弾
+    */
+
+    for(
+        let i=0;
+        i<8;
+        i++
+    ){
+
+        enemyBullets.push({
+
+            x:
+                miniBoss.x,
+
+            y:
+                miniBoss.y+
+                miniBoss.h/2,
+
+            w:12,
+
+            h:12,
+
+            speed:
+                -4-
+                Math.random()*3,
+
+            vy:
+                (Math.random()-
+                .5)*7,
+
+            damage:1
+
+        });
+
+    }
+
+}
+
+
+/* =========================
+   MINI BOSS DEFEAT
+========================= */
+
+function defeatMiniBoss(){
+
+    const boss=
+        miniBoss;
+
+
+    miniBoss=null;
+
+
+    const index=
+        enemies.indexOf(
+            boss
+        );
+
+
+    if(index>=0){
+
+        enemies.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    score +=
+        5000+
+        stage*500;
+
+
+    coins +=
+        20+
+        stage*2;
+
+
+    combo += 5;
+
+
+    feverGauge=
+        feverMax;
+
+
+    for(
+        let i=0;
+        i<120;
+        i++
+    ){
+
+        particles.push({
+
+            x:
+                boss.x+
+                Math.random()*
+                boss.w,
+
+            y:
+                boss.y+
+                Math.random()*
+                boss.h,
+
+            vx:
+                (Math.random()-
+                .5)*12,
+
+            vy:
+                (Math.random()-
+                .5)*12,
+
+            life:
+                30+
+                Math.random()*60,
+
+            size:
+                3+
+                Math.random()*8
+
+        });
+
+    }
+
+
+    createWarning(
+        "💥 BOSS DEFEATED!",
+        120
+    );
+
+}
+
+
+/* =========================
+   MINI BOSS SPAWN TIMER
+========================= */
+
+function updateMiniBossTimer(){
+
+    if(
+        miniBoss
+    )
+        return;
+
+
+    miniBossTimer--;
+
+
+    /*
+       30秒ごと
+    */
+
+    if(
+        miniBossTimer<=0
+    ){
+
+        spawnMiniBoss();
+
+        miniBossTimer=
+            Math.max(
+                1200,
+                2400-
+                stage*100
+            );
+
+    }
+
+}
+
+
+/* =========================
+   MINI BOSS COLLISION
+========================= */
+
+function miniBossCollision(){
+
+    if(
+        !miniBoss
+    )
+        return;
+
+
+    if(
+        rectHit(
+            player,
+            miniBoss
+        )
+    ){
+
+        damagePlayer();
+
+    }
+
+}
+
+
+/* =========================
+   MINI BOSS BULLET COLLISION
+========================= */
+
+function miniBossBulletCollision(){
+
+    if(
+        !miniBoss
+    )
+        return;
+
+
+    for(
+        let i=
+            bullets.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const bullet=
+            bullets[i];
+
+
+        if(
+            rectHit(
+                bullet,
+                miniBoss
+            )
+        ){
+
+            bullets.splice(
+                i,
+                1
+            );
+
+
+            miniBoss.hp -=
+                bullet.damage;
+
+
+            score += 10;
+
+
+            explosion(
+                bullet.x,
+                bullet.y,
+                8
+            );
+
+
+            if(
+                miniBoss.hp<=0
+            ){
+
+                defeatMiniBoss();
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   DRAW FEVER BAR
+========================= */
+
+function drawFeverBar(){
+
+    const x=15;
+    const y=120;
+    const width=W-30;
+    const height=12;
+
+
+    ctx.fillStyle=
+        "rgba(0,0,0,.45)";
+
+    ctx.fillRect(
+        x,
+        y,
+        width,
+        height
+    );
+
+
+    const rate=
+        feverActive
+        ? feverTime/600
+        : feverGauge/
+          feverMax;
+
+
+    ctx.fillStyle=
+        "#ff9800";
+
+    ctx.fillRect(
+        x,
+        y,
+        width*
+        Math.max(
+            0,
+            Math.min(
+                1,
+                rate
+            )
+        ),
+        height
+    );
+
+
+    ctx.strokeStyle=
+        "rgba(255,255,255,.7)";
+
+    ctx.strokeRect(
+        x,
+        y,
+        width,
+        height
+    );
+
+
+    ctx.fillStyle="#fff";
+
+    ctx.font=
+        "bold 12px Arial";
+
+    ctx.textAlign="center";
+
+
+    ctx.fillText(
+        feverActive
+            ? "FEVER "+Math.ceil(
+                feverTime/60
+              )+"s"
+            : "FEVER",
+        W/2,
+        y+10
+    );
+
+
+    ctx.textAlign="left";
+
+}
+
+
+/* =========================
+   DRAW MINI BOSS
+========================= */
+
+function drawMiniBoss(){
+
+    if(
+        !miniBoss
+    )
+        return;
+
+
+    const boss=
+        miniBoss;
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        boss.x,
+        boss.y
+    );
+
+
+    /* AURA */
+
+    ctx.fillStyle=
+        "rgba(255,0,50,.15)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        boss.w/2,
+        boss.h/2,
+        85+
+        Math.sin(
+            gameTime*.1
+        )*10,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* BODY */
+
+    ctx.fillStyle=
+        "#171717";
+
+    ctx.fillRect(
+        8,
+        20,
+        boss.w-16,
+        boss.h-20
+    );
+
+
+    /* ARMOR */
+
+    ctx.strokeStyle=
+        "#ff1744";
+
+    ctx.lineWidth=6;
+
+    ctx.strokeRect(
+        10,
+        22,
+        boss.w-20,
+        boss.h-30
+    );
+
+
+    /* HEAD */
+
+    ctx.fillStyle=
+        "#424242";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        boss.w/2,
+        20,
+        28,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* EYES */
+
+    ctx.fillStyle=
+        "#ff1744";
+
+    ctx.fillRect(
+        23,
+        14,
+        14,
+        7
+    );
+
+    ctx.fillRect(
+        73,
+        14,
+        14,
+        7
+    );
+
+
+    /* CORE */
+
+    ctx.fillStyle=
+        feverActive
+            ? "#ffeb3b"
+            : "#ff1744";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        boss.w/2,
+        75,
+        18+
+        Math.sin(
+            gameTime*.15
+        )*3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+
+    /* BOSS HP */
+
+    const barW=
+        W-40;
+
+    const barX=20;
+
+    const barY=
+        boss.y-25;
+
+
+    ctx.fillStyle="#222";
+
+    ctx.fillRect(
+        barX,
+        barY,
+        barW,
+        14
+    );
+
+
+    ctx.fillStyle=
+        "#ff1744";
+
+    ctx.fillRect(
+        barX,
+        barY,
+        barW*
+        Math.max(
+            0,
+            boss.hp/
+            boss.maxHp
+        ),
+        14
+    );
+
+
+    ctx.strokeStyle="#fff";
+
+    ctx.strokeRect(
+        barX,
+        barY,
+        barW,
+        14
+    );
+
+
+    ctx.fillStyle="#fff";
+
+    ctx.font=
+        "bold 14px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.fillText(
+        "MINI BOSS",
+        W/2,
+        barY-7
+    );
+
+    ctx.textAlign="left";
+
+}
+
+
+/* =========================
+   FEVER VISUAL
+========================= */
+
+function drawFeverEffect(){
+
+    if(
+        !feverActive
+    )
+        return;
+
+
+    ctx.save();
+
+
+    ctx.globalAlpha=
+        .06+
+        Math.sin(
+            gameTime*.2
+        )*.025;
+
+
+    ctx.fillStyle=
+        "#ff9800";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   UPDATE HOOK
+========================= */
+
+const oldUpdate2=
+    update;
+
+
+update=function(){
+
+    oldUpdate2();
+
+
+    if(
+        gameStarted
+    ){
+
+        updateFever();
+
+        updateCombo();
+
+        updateMiniBossTimer();
+
+        updateMiniBoss();
+
+        miniBossCollision();
+
+        miniBossBulletCollision();
+
+    }
+
+};
+
+
+/* =========================
+   DRAW HOOK
+========================= */
+
+const oldDraw2=
+    draw;
+
+
+draw=function(){
+
+    oldDraw2();
+
+    drawFeverBar();
+
+    drawMiniBoss();
+
+    drawFeverEffect();
+
+};
+
+
+/* =========================
+   STARTUP
+========================= */
+
+feverGauge=0;
+
+miniBossTimer=
+    1800;
+/* =========================================================
+
+   PART 2-C
+
+   POLISH / DAMAGE EFFECT / COMBO UI / FEVER EFFECT
+
+========================================================= */
+
+/* =========================
+
+   EFFECT VARIABLES
+
+========================= */
+
+let screenShake = 0;
+
+let damageFlash = 0;
+
+let comboDisplayTimer = 0;
+
+let comboDisplayValue = 0;
+
+let killTextEffects = [];
+
+/* =========================
+
+   SCREEN SHAKE
+
+========================= */
+
+function shakeScreen(amount=8){
+
+    screenShake =
+
+        Math.max(
+
+            screenShake,
+
+            amount
+
+        );
+
+}
+
+/* =========================
+
+   KILL TEXT
+
+========================= */
+
+function createKillText(
+
+    text,
+
+    x,
+
+    y
+
+){
+
+    killTextEffects.push({
+
+        text:text,
+
+        x:x,
+
+        y:y,
+
+        life:50,
+
+        maxLife:50,
+
+        vy:-1.2
+
+    });
+
+}
+
+/* =========================
+
+   UPDATE KILL TEXT
+
+========================= */
+
+function updateKillText(){
+
+    killTextEffects.forEach(
+
+        effect=>{
+
+            effect.y +=
+
+                effect.vy;
+
+            effect.life--;
+
+        }
+
+    );
+
+    killTextEffects=
+
+        killTextEffects.filter(
+
+            effect=>
+
+                effect.life>0
+
+        );
+
+}
+
+/* =========================
+
+   DRAW KILL TEXT
+
+========================= */
+
+function drawKillText(){
+
+    ctx.save();
+
+    ctx.textAlign="center";
+
+    ctx.font=
+
+        "bold 22px Arial";
+
+    killTextEffects.forEach(
+
+        effect=>{
+
+            ctx.globalAlpha=
+
+                effect.life/
+
+                effect.maxLife;
+
+            ctx.fillStyle=
+
+                "#fff";
+
+            ctx.strokeStyle=
+
+                "#111";
+
+            ctx.lineWidth=4;
+
+            ctx.strokeText(
+
+                effect.text,
+
+                effect.x,
+
+                effect.y
+
+            );
+
+            ctx.fillText(
+
+                effect.text,
+
+                effect.x,
+
+                effect.y
+
+            );
+
+        }
+
+    );
+
+    ctx.restore();
+
+}
+
+/* =========================
+
+   REPLACE DAMAGE PLAYER
+
+========================= */
+
+damagePlayer=function(){
+
+    if(
+
+        player.invincible>0
+
+    )
+
+        return;
+
+    player.hp--;
+
+    player.invincible=70;
+
+    combo=0;
+
+    comboTimer=0;
+
+    damageFlash=18;
+
+    shakeScreen(12);
+
+    explosion(
+
+        player.x+
+
+        player.w/2,
+
+        player.y+
+
+        player.h/2,
+
+        25
+
+    );
+
+    if(
+
+        player.hp<=0
+
+    ){
+
+        gameStarted=false;
+
+        saveGame();
+
+        showGameOver();
+
+    }
+
+};
+
+/* =========================
+
+   GAME OVER
+
+========================= */
+
+let gameOverScreen=null;
+
+function createGameOverScreen(){
+
+    if(gameOverScreen)
+
+        return;
+
+    gameOverScreen=
+
+        document.createElement(
+
+            "div"
+
+        );
+
+    gameOverScreen.id=
+
+        "gameOverScreen";
+
+    gameOverScreen.style.position=
+
+        "absolute";
+
+    gameOverScreen.style.inset=
+
+        "0";
+
+    gameOverScreen.style.background=
+
+        "rgba(0,0,0,.78)";
+
+    gameOverScreen.style.display=
+
+        "none";
+
+    gameOverScreen.style.flexDirection=
+
+        "column";
+
+    gameOverScreen.style.justifyContent=
+
+        "center";
+
+    gameOverScreen.style.alignItems=
+
+        "center";
+
+    gameOverScreen.style.color=
+
+        "#fff";
+
+    gameOverScreen.style.zIndex=
+
+        "20";
+
+    gameOverScreen.innerHTML=`
+
+        <div style="
+
+            font-size:54px;
+
+            font-weight:bold;
+
+            margin-bottom:15px;
+
+        ">
+
+            GAME OVER
+
+        </div>
+
+        <div id="finalScore"
+
+            style="
+
+            font-size:25px;
+
+            margin-bottom:8px;
+
+        ">
+
+        </div>
+
+        <div id="finalKills"
+
+            style="
+
+            font-size:20px;
+
+            margin-bottom:8px;
+
+        ">
+
+        </div>
+
+        <div id="finalCoins"
+
+            style="
+
+            font-size:20px;
+
+            margin-bottom:25px;
+
+        ">
+
+        </div>
+
+        <button id="restartBtn"
+
+            style="
+
+            border:0;
+
+            padding:16px 40px;
+
+            border-radius:14px;
+
+            font-size:22px;
+
+            font-weight:bold;
+
+            background:#fff;
+
+        ">
+
+            RESTART
+
+        </button>
+
+    `;
+
+    document
+
+        .getElementById(
+
+            "gameWrap"
+
+        )
+
+        .appendChild(
+
+            gameOverScreen
+
+        );
+
+    document
+
+        .getElementById(
+
+            "restartBtn"
+
+        )
+
+        .addEventListener(
+
+            "click",
+
+            restartGame
+
+        );
+
+}
+
+function showGameOver(){
+
+    createGameOverScreen();
+
+    document
+
+        .getElementById(
+
+            "finalScore"
+
+        )
+
+        .textContent=
+
+            "SCORE : "+
+
+            score;
+
+    document
+
+        .getElementById(
+
+            "finalKills"
+
+        )
+
+        .textContent=
+
+            "KILLS : "+
+
+            kills;
+
+    document
+
+        .getElementById(
+
+            "finalCoins"
+
+        )
+
+        .textContent=
+
+            "COINS : "+
+
+            coins;
+
+    gameOverScreen.style.display=
+
+        "flex";
+
+}
+
+function restartGame(){
+
+    if(
+
+        gameOverScreen
+
+    ){
+
+        gameOverScreen.style.display=
+
+            "none";
+
+    }
+
+    resetGameData();
+
+    gameStarted=true;
+
+}
+
+/* =========================
+
+   RESET
+
+========================= */
+
+function resetGameData(){
+
+    score=0;
+
+    stage=1;
+
+    coins=0;
+
+    kills=0;
+
+    combo=0;
+
+    comboTimer=0;
+
+    gameTime=0;
+
+    feverGauge=0;
+
+    feverActive=false;
+
+    feverTime=0;
+
+    stageTimer=0;
+
+    miniBoss=null;
+
+    miniBossTimer=1800;
+
+    specialSpawnTimer=240;
+
+    stageBannerTimer=0;
+
+    screenShake=0;
+
+    damageFlash=0;
+
+    bullets.length=0;
+
+    enemyBullets.length=0;
+
+    enemies.length=0;
+
+    particles.length=0;
+
+    coinsObj.length=0;
+
+    enemyWarnings.length=0;
+
+    killTextEffects.length=0;
+
+    player.x=80;
+
+    player.y=
+
+        groundY-
+
+        player.h;
+
+    player.vx=0;
+
+    player.vy=0;
+
+    player.hp=
+
+        player.maxHp;
+
+    player.ammo=
+
+        player.maxAmmo;
+
+    player.reloadTime=0;
+
+    player.shootCooldown=0;
+
+    player.dashCooldown=0;
+
+    player.dashDuration=0;
+
+    player.invincible=0;
+
+    spawnTimer=60;
+
+}
+
+/* =========================
+
+   RESTART KEY
+
+========================= */
+
+document.addEventListener(
+
+    "keydown",
+
+    e=>{
+
+        if(
+
+            e.key.toLowerCase()==="r" &&
+
+            !gameStarted
+
+        ){
+
+            restartGame();
+
+        }
+
+    }
+
+);
+
+/* =========================
+
+   COMBO EFFECT
+
+========================= */
+
+function drawCombo(){
+
+    if(
+
+        combo<=1
+
+    )
+
+        return;
+
+    const scale=
+
+        Math.min(
+
+            1.4,
+
+            1+
+
+            combo*0.025
+
+        );
+
+    ctx.save();
+
+    ctx.translate(
+
+        W/2,
+
+        175
+
+    );
+
+    ctx.scale(
+
+        scale,
+
+        scale
+
+    );
+
+    ctx.textAlign="center";
+
+    ctx.font=
+
+        "bold 38px Arial";
+
+    ctx.lineWidth=6;
+
+    ctx.strokeStyle="#111";
+
+    ctx.fillStyle=
+
+        feverActive
+
+            ? "#ff9800"
+
+            : "#fff";
+
+    ctx.strokeText(
+
+        combo+" COMBO",
+
+        0,
+
+        0
+
+    );
+
+    ctx.fillText(
+
+        combo+" COMBO",
+
+        0,
+
+        0
+
+    );
+
+    ctx.restore();
+
+}
+
+/* =========================
+
+   ENEMY KILL EFFECT HOOK
+
+========================= */
+
+const oldKillEnemy2=
+
+    killEnemy;
+
+killEnemy=function(enemy){
+
+    oldKillEnemy2(enemy);
+
+    createKillText(
+
+        "+"+
+
+        (
+
+            100+
+
+            combo*10
+
+        ),
+
+        enemy.x+
+
+        enemy.w/2,
+
+        enemy.y
+
+    );
+
+    shakeScreen(
+
+        enemy.type==="elite"
+
+            ? 8
+
+            : 3
+
+    );
+
+};
+
+/* =========================
+
+   SPECIAL KILL TEXT
+
+========================= */
+
+const oldDefeatMiniBoss=
+
+    defeatMiniBoss;
+
+defeatMiniBoss=function(){
+
+    oldDefeatMiniBoss();
+
+    shakeScreen(25);
+
+    createKillText(
+
+        "BOSS +5000",
+
+        W/2,
+
+        350
+
+    );
+
+};
+
+/* =========================
+
+   UPDATE EFFECTS
+
+========================= */
+
+const oldUpdate3=
+
+    update;
+
+update=function(){
+
+    oldUpdate3();
+
+    if(
+
+        screenShake>0
+
+    ){
+
+        screenShake*=0.82;
+
+        if(
+
+            screenShake<0.2
+
+        ){
+
+            screenShake=0;
+
+        }
+
+    }
+
+    if(
+
+        damageFlash>0
+
+    ){
+
+        damageFlash--;
+
+    }
+
+    updateKillText();
+
+};
+
+/* =========================
+
+   DRAW EFFECTS
+
+========================= */
+
+const oldDraw3=
+
+    draw;
+
+draw=function(){
+
+    /*
+
+       screen shake
+
+    */
+
+    ctx.save();
+
+    if(
+
+        screenShake>0
+
+    ){
+
+        const sx=
+
+            (
+
+                Math.random()-
+
+                .5
+
+            )*
+
+            screenShake;
+
+        const sy=
+
+            (
+
+                Math.random()-
+
+                .5
+
+            )*
+
+            screenShake;
+
+        ctx.translate(
+
+            sx,
+
+            sy
+
+        );
+
+    }
+
+    oldDraw3();
+
+    ctx.restore();
+
+    /* UI EFFECTS */
+
+    drawCombo();
+
+    drawKillText();
+
+    /* DAMAGE FLASH */
+
+    if(
+
+        damageFlash>0
+
+    ){
+
+        ctx.save();
+
+        ctx.globalAlpha=
+
+            damageFlash/
+
+            30;
+
+        ctx.fillStyle=
+
+            "#ff0000";
+
+        ctx.fillRect(
+
+            0,
+
+            0,
+
+            W,
+
+            H
+
+        );
+
+        ctx.restore();
+
+    }
+
+};
+
+/* =========================
+
+   FEVER BORDER
+
+========================= */
+
+function drawFeverBorder(){
+
+    if(
+
+        !feverActive
+
+    )
+
+        return;
+
+    ctx.save();
+
+    const pulse=
+
+        5+
+
+        Math.sin(
+
+            gameTime*.25
+
+        )*4;
+
+    ctx.strokeStyle=
+
+        "#ff9800";
+
+    ctx.lineWidth=
+
+        pulse;
+
+    ctx.strokeRect(
+
+        4,
+
+        4,
+
+        W-8,
+
+        H-8
+
+    );
+
+    ctx.restore();
+
+}
+
+/* =========================
+
+   FINAL DRAW HOOK
+
+========================= */
+
+const oldDraw4=
+
+    draw;
+
+draw=function(){
+
+    oldDraw4();
+
+    drawFeverBorder();
+
+};
+
+/* =========================
+
+   FEVER AUTO SCORE
+
+========================= */
+
+const oldUpdate4=
+
+    update;
+
+update=function(){
+
+    oldUpdate4();
+
+    if(
+
+        gameStarted &&
+
+        feverActive &&
+
+        gameTime%30===0
+
+    ){
+
+        score+=10;
+
+    }
+
+};
+
+/* =========================
+
+   HUD IMPROVEMENT
+
+========================= */
+
+function improveHUD(){
+
+    const hud=
+
+        document.getElementById(
+
+            "hud"
+
+        );
+
+    hud.style.height=
+
+        "118px";
+
+    hud.style.backdropFilter=
+
+        "blur(5px)";
+
+    hud.style.webkitBackdropFilter=
+
+        "blur(5px)";
+
+    const reload=
+
+        document.getElementById(
+
+            "reloadBar"
+
+        );
+
+    reload.style.height=
+
+        "8px";
+
+    const hp=
+
+        document.getElementById(
+
+            "hpBar"
+
+        );
+
+    hp.style.height=
+
+        "12px";
+
+}
+
+improveHUD();
+
+/* =========================
+
+   SAVE ON PAGE HIDE
+
+========================= */
+
+document.addEventListener(
+
+    "visibilitychange",
+
+    ()=>{
+
+        if(
+
+            document.hidden
+
+        ){
+
+            saveGame();
+
+        }
+
+    }
+
+);
