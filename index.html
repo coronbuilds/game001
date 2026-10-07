@@ -6053,3 +6053,1128 @@ document.addEventListener(
     }
 
 );
+/* =========================================================
+   PART 3-A
+   WEAPON SYSTEM
+========================================================= */
+
+const weapons = {
+
+    handgun:{
+        name:"HANDGUN",
+        ammo:30,
+        maxAmmo:30,
+        fireRate:8,
+        damage:1,
+        bulletSpeed:13,
+        bulletSize:6,
+        color:"#ffe600"
+    },
+
+    shotgun:{
+        name:"SHOTGUN",
+        ammo:8,
+        maxAmmo:8,
+        fireRate:28,
+        damage:2,
+        bulletSpeed:11,
+        bulletSize:7,
+        color:"#ff9800"
+    },
+
+    machinegun:{
+        name:"MACHINE GUN",
+        ammo:60,
+        maxAmmo:60,
+        fireRate:3,
+        damage:1,
+        bulletSpeed:15,
+        bulletSize:5,
+        color:"#00e5ff"
+    },
+
+    laser:{
+        name:"LASER",
+        ammo:15,
+        maxAmmo:15,
+        fireRate:18,
+        damage:5,
+        bulletSpeed:20,
+        bulletSize:10,
+        color:"#ff1744"
+    },
+
+    rocket:{
+        name:"ROCKET",
+        ammo:5,
+        maxAmmo:5,
+        fireRate:45,
+        damage:12,
+        bulletSpeed:8,
+        bulletSize:14,
+        color:"#ff5722"
+    }
+
+};
+
+
+let currentWeapon="handgun";
+
+let weaponOrder=[
+    "handgun",
+    "shotgun",
+    "machinegun",
+    "laser",
+    "rocket"
+];
+
+let weaponIndex=0;
+
+let weaponSwitchCooldown=0;
+
+
+/* =========================
+   CURRENT WEAPON
+========================= */
+
+function getWeapon(){
+
+    return weapons[
+        currentWeapon
+    ];
+
+}
+
+
+/* =========================
+   EQUIP WEAPON
+========================= */
+
+function equipWeapon(
+    weaponName
+){
+
+    if(
+        !weapons[weaponName]
+    )
+        return;
+
+
+    currentWeapon=
+        weaponName;
+
+
+    weaponIndex=
+        weaponOrder.indexOf(
+            weaponName
+        );
+
+
+    const weapon=
+        getWeapon();
+
+
+    player.ammo=
+        weapon.maxAmmo;
+
+
+    player.maxAmmo=
+        weapon.maxAmmo;
+
+
+    player.reloadTime=0;
+
+    player.shootCooldown=0;
+
+
+    createWarning(
+        weapon.name,
+        35
+    );
+
+}
+
+
+/* =========================
+   NEXT WEAPON
+========================= */
+
+function nextWeapon(){
+
+    if(
+        weaponSwitchCooldown>0
+    )
+        return;
+
+
+    weaponIndex++;
+
+
+    if(
+        weaponIndex>=
+        weaponOrder.length
+    ){
+
+        weaponIndex=0;
+
+    }
+
+
+    equipWeapon(
+        weaponOrder[
+            weaponIndex
+        ]
+    );
+
+
+    weaponSwitchCooldown=15;
+
+}
+
+
+/* =========================
+   PREVIOUS WEAPON
+========================= */
+
+function previousWeapon(){
+
+    if(
+        weaponSwitchCooldown>0
+    )
+        return;
+
+
+    weaponIndex--;
+
+
+    if(
+        weaponIndex<0
+    ){
+
+        weaponIndex=
+            weaponOrder.length-1;
+
+    }
+
+
+    equipWeapon(
+        weaponOrder[
+            weaponIndex
+        ]
+    );
+
+
+    weaponSwitchCooldown=15;
+
+}
+
+
+/* =========================
+   WEAPON SHOOT
+========================= */
+
+function shoot(){
+
+    if(
+        !gameStarted
+    )
+        return;
+
+
+    if(
+        player.reloadTime>0
+    )
+        return;
+
+
+    if(
+        player.shootCooldown>0
+    )
+        return;
+
+
+    const weapon=
+        getWeapon();
+
+
+    if(
+        player.ammo<=0
+    ){
+
+        startReload();
+
+        return;
+
+    }
+
+
+    /* SHOTGUN */
+
+    if(
+        currentWeapon==="shotgun"
+    ){
+
+        for(
+            let i=-2;
+            i<=2;
+            i++
+        ){
+
+            bullets.push({
+
+                x:
+                    player.x+
+                    player.w,
+
+                y:
+                    player.y+
+                    27,
+
+                w:
+                    18,
+
+                h:
+                    6,
+
+                speed:
+                    weapon.bulletSpeed,
+
+                vy:
+                    i*1.5,
+
+                damage:
+                    weapon.damage,
+
+                type:
+                    "shotgun",
+
+                color:
+                    weapon.color
+
+            });
+
+        }
+
+    }
+
+
+    /* ROCKET */
+
+    else if(
+        currentWeapon==="rocket"
+    ){
+
+        bullets.push({
+
+            x:
+                player.x+
+                player.w,
+
+            y:
+                player.y+
+                22,
+
+            w:
+                25,
+
+            h:
+                12,
+
+            speed:
+                weapon.bulletSpeed,
+
+            vy:0,
+
+            damage:
+                weapon.damage,
+
+            type:
+                "rocket",
+
+            color:
+                weapon.color
+
+        });
+
+    }
+
+
+    /* LASER */
+
+    else if(
+        currentWeapon==="laser"
+    ){
+
+        bullets.push({
+
+            x:
+                player.x+
+                player.w,
+
+            y:
+                player.y+
+                27,
+
+            w:
+                45,
+
+            h:
+                5,
+
+            speed:
+                weapon.bulletSpeed,
+
+            vy:0,
+
+            damage:
+                weapon.damage,
+
+            type:
+                "laser",
+
+            color:
+                weapon.color
+
+        });
+
+    }
+
+
+    /* NORMAL */
+
+    else{
+
+        bullets.push({
+
+            x:
+                player.x+
+                player.w,
+
+            y:
+                player.y+
+                27,
+
+            w:
+                currentWeapon===
+                "machinegun"
+                ? 24
+                : 20,
+
+            h:
+                weapon.bulletSize,
+
+            speed:
+                weapon.bulletSpeed,
+
+            vy:0,
+
+            damage:
+                weapon.damage,
+
+            type:
+                currentWeapon,
+
+            color:
+                weapon.color
+
+        });
+
+    }
+
+
+    player.ammo--;
+
+    player.shootCooldown=
+        weapon.fireRate;
+
+
+    if(
+        player.ammo<=0
+    ){
+
+        startReload();
+
+    }
+
+
+    /* MUZZLE FLASH */
+
+    explosion(
+        player.x+
+        player.w+
+        10,
+
+        player.y+
+        30,
+
+        currentWeapon==="rocket"
+            ? 10
+            : 4
+    );
+
+}
+
+
+/* =========================
+   BULLET UPDATE OVERRIDE
+========================= */
+
+function updateWeaponBullets(){
+
+    bullets.forEach(
+        bullet=>{
+
+            bullet.x +=
+                bullet.speed;
+
+
+            if(
+                bullet.vy
+            ){
+
+                bullet.y +=
+                    bullet.vy;
+
+            }
+
+        }
+    );
+
+
+    bullets=
+        bullets.filter(
+            bullet=>
+                bullet.x<
+                W+150 &&
+                bullet.y>
+                -100 &&
+                bullet.y<
+                H+100
+        );
+
+}
+
+
+/* =========================
+   ROCKET EXPLOSION
+========================= */
+
+function rocketExplosion(
+    bullet
+){
+
+    const radius=75;
+
+
+    explosion(
+        bullet.x,
+        bullet.y,
+        40
+    );
+
+
+    for(
+        let i=
+            enemies.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const enemy=
+            enemies[i];
+
+
+        const ex=
+            enemy.x+
+            enemy.w/2;
+
+        const ey=
+            enemy.y+
+            enemy.h/2;
+
+
+        const dx=
+            ex-
+            bullet.x;
+
+        const dy=
+            ey-
+            bullet.y;
+
+
+        const distance=
+            Math.sqrt(
+                dx*dx+
+                dy*dy
+            );
+
+
+        if(
+            distance<=radius
+        ){
+
+            enemy.hp-=
+                bullet.damage;
+
+
+            if(
+                enemy.hp<=0
+            ){
+
+                killEnemy(
+                    enemy
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   LASER PIERCE
+========================= */
+
+function laserPierce(){
+
+    /*
+       Laser can hit multiple enemies.
+       The normal bullet collision system
+       is bypassed for laser bullets.
+    */
+
+    for(
+        let bi=
+            bullets.length-1;
+
+        bi>=0;
+
+        bi--
+    ){
+
+        const bullet=
+            bullets[bi];
+
+
+        if(
+            bullet.type!=="laser"
+        )
+            continue;
+
+
+        for(
+            let ei=
+                enemies.length-1;
+
+            ei>=0;
+
+            ei--
+        ){
+
+            const enemy=
+                enemies[ei];
+
+
+            if(
+                rectHit(
+                    bullet,
+                    enemy
+                )
+            ){
+
+                enemy.hp-=
+                    bullet.damage;
+
+
+                explosion(
+                    enemy.x+
+                    enemy.w/2,
+
+                    enemy.y+
+                    enemy.h/2,
+
+                    5
+                );
+
+
+                if(
+                    enemy.hp<=0
+                ){
+
+                    killEnemy(
+                        enemy
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   DRAW WEAPON BULLETS
+========================= */
+
+function drawWeaponBullets(){
+
+    bullets.forEach(
+        bullet=>{
+
+            ctx.save();
+
+
+            if(
+                bullet.type===
+                "rocket"
+            ){
+
+                /* ROCKET */
+
+                ctx.fillStyle=
+                    "#555";
+
+                ctx.fillRect(
+                    bullet.x,
+                    bullet.y,
+                    bullet.w,
+                    bullet.h
+                );
+
+
+                ctx.fillStyle=
+                    "#ff9800";
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    bullet.x,
+                    bullet.y+
+                    bullet.h/2
+                );
+
+                ctx.lineTo(
+                    bullet.x-18,
+                    bullet.y
+                );
+
+                ctx.lineTo(
+                    bullet.x-18,
+                    bullet.y+
+                    bullet.h
+                );
+
+                ctx.closePath();
+
+                ctx.fill();
+
+            }
+
+
+            else if(
+                bullet.type===
+                "laser"
+            ){
+
+                /* LASER */
+
+                ctx.shadowBlur=18;
+
+                ctx.shadowColor=
+                    bullet.color;
+
+
+                ctx.fillStyle=
+                    bullet.color;
+
+
+                ctx.fillRect(
+                    bullet.x,
+                    bullet.y,
+                    bullet.w,
+                    bullet.h
+                );
+
+
+                ctx.fillStyle="#fff";
+
+                ctx.fillRect(
+                    bullet.x,
+                    bullet.y+1,
+                    bullet.w,
+                    2
+                );
+
+            }
+
+
+            else if(
+                bullet.type===
+                "shotgun"
+            ){
+
+                ctx.fillStyle=
+                    bullet.color;
+
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    bullet.x,
+                    bullet.y+
+                    bullet.h/2,
+                    5,
+                    0,
+                    Math.PI*2
+                );
+
+                ctx.fill();
+
+            }
+
+
+            else{
+
+                ctx.fillStyle=
+                    bullet.color||
+                    "#ffe600";
+
+
+                ctx.fillRect(
+                    bullet.x,
+                    bullet.y,
+                    bullet.w,
+                    bullet.h
+                );
+
+            }
+
+
+            ctx.restore();
+
+        }
+    );
+
+}
+
+
+/* =========================
+   WEAPON HUD
+========================= */
+
+function drawWeaponHUD(){
+
+    const weapon=
+        getWeapon();
+
+
+    ctx.save();
+
+
+    ctx.fillStyle=
+        "rgba(0,0,0,.55)";
+
+
+    ctx.fillRect(
+        15,
+        142,
+        250,
+        42
+    );
+
+
+    ctx.fillStyle="#fff";
+
+    ctx.font=
+        "bold 17px Arial";
+
+
+    ctx.fillText(
+        weapon.name,
+        25,
+        168
+    );
+
+
+    ctx.fillStyle=
+        weapon.color;
+
+
+    ctx.font=
+        "bold 16px Arial";
+
+
+    ctx.fillText(
+        player.ammo+
+        " / "+
+        weapon.maxAmmo,
+        160,
+        168
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   WEAPON SWITCH KEYS
+========================= */
+
+document.addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.key.toLowerCase()==="q"
+        ){
+
+            previousWeapon();
+
+        }
+
+
+        if(
+            e.key.toLowerCase()==="e"
+        ){
+
+            nextWeapon();
+
+        }
+
+
+        if(
+            e.key==="1"
+        ){
+
+            equipWeapon(
+                "handgun"
+            );
+
+        }
+
+
+        if(
+            e.key==="2"
+        ){
+
+            equipWeapon(
+                "shotgun"
+            );
+
+        }
+
+
+        if(
+            e.key==="3"
+        ){
+
+            equipWeapon(
+                "machinegun"
+            );
+
+        }
+
+
+        if(
+            e.key==="4"
+        ){
+
+            equipWeapon(
+                "laser"
+            );
+
+        }
+
+
+        if(
+            e.key==="5"
+        ){
+
+            equipWeapon(
+                "rocket"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================
+   MOBILE WEAPON BUTTON
+========================= */
+
+const weaponBtn=
+    document.createElement(
+        "div"
+    );
+
+
+weaponBtn.className="btn";
+
+weaponBtn.id=
+    "weaponBtn";
+
+weaponBtn.textContent=
+    "🔫";
+
+
+weaponBtn.style.width=
+    "62px";
+
+weaponBtn.style.height=
+    "62px";
+
+weaponBtn.style.fontSize=
+    "24px";
+
+
+document
+    .querySelector(
+        ".rightPad"
+    )
+    .insertBefore(
+        weaponBtn,
+        document.getElementById(
+            "jumpBtn"
+        )
+    );
+
+
+weaponBtn.addEventListener(
+    "pointerdown",
+    e=>{
+
+        e.preventDefault();
+
+        nextWeapon();
+
+    }
+);
+
+
+/* =========================
+   RELOAD BUTTON
+========================= */
+
+const reloadBtn=
+    document.createElement(
+        "div"
+    );
+
+
+reloadBtn.className="btn";
+
+reloadBtn.id=
+    "reloadBtn";
+
+reloadBtn.textContent=
+    "↻";
+
+
+reloadBtn.style.width=
+    "62px";
+
+reloadBtn.style.height=
+    "62px";
+
+reloadBtn.style.fontSize=
+    "30px";
+
+
+document
+    .querySelector(
+        ".rightPad"
+    )
+    .insertBefore(
+        reloadBtn,
+        document.getElementById(
+            "jumpBtn"
+        )
+    );
+
+
+reloadBtn.addEventListener(
+    "pointerdown",
+    e=>{
+
+        e.preventDefault();
+
+        startReload();
+
+    }
+);
+
+
+/* =========================
+   WEAPON SWITCH COOLDOWN
+========================= */
+
+const oldUpdate5=
+    update;
+
+
+update=function(){
+
+    oldUpdate5();
+
+
+    if(
+        weaponSwitchCooldown>0
+    ){
+
+        weaponSwitchCooldown--;
+
+    }
+
+
+    if(
+        gameStarted
+    ){
+
+        updateWeaponBullets();
+
+        laserPierce();
+
+    }
+
+};
+
+
+/* =========================
+   REPLACE BULLET DRAW
+========================= */
+
+const oldDraw5=
+    draw;
+
+
+draw=function(){
+
+    oldDraw5();
+
+    drawWeaponBullets();
+
+    drawWeaponHUD();
+
+};
+
+
+/* =========================
+   INITIAL WEAPON
+========================= */
+
+equipWeapon(
+    "handgun"
+);
